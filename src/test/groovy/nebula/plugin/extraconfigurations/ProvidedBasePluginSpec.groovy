@@ -27,8 +27,11 @@ class ProvidedBasePluginSpec extends ProjectSpec {
 
     def 'check versions'() {
         project.apply plugin: 'java'
-        project.apply plugin: 'netflix-repos'
         project.apply plugin: pluginName
+
+        project.repositories {
+            mavenCentral()
+        }
 
         project.dependencies {
             compile 'com.google.guava:guava:12.0'

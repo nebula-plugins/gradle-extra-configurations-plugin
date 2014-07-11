@@ -105,4 +105,55 @@ dependencies {
         def orderEntries = moduleXml.component.orderEntry.findAll { it.@type.text() == 'module-library' && it.@scope.text() == 'PROVIDED' }
         orderEntries.find { it.library.CLASSES.root.@url.text().contains('commons-lang3-3.3.2.jar') }
     }
+
+    def "Publishing provided dependencies to a Maven repository preserves the scope"() {
+        given:
+        File repoUrl = new File(projectDir, 'build/repo')
+
+        when:
+        buildFile << """
+apply plugin: 'java'
+apply plugin: 'nebula-provided-base'
+apply plugin: 'maven-publish'
+
+group = 'nebula.extraconf'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided 'org.apache.commons:commons-lang3:3.3.2'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            url '$repoUrl.canonicalPath'
+        }
+    }
+}
+"""
+        createProductionJavaSourceFile()
+        runTasksSuccessfully('publish')
+
+        then:
+        File pomFile = new File(repoUrl, "nebula/extraconf/$moduleName/1.0/$moduleName-1.0.pom")
+        pomFile.exists()
+        def pomXml = new XmlSlurper().parseText(pomFile.text)
+        def dependencies = pomXml.dependencies
+        dependencies.size() == 1
+        def commonsLang = dependencies.dependency[0]
+        commonsLang.groupId.text() == 'org.apache.commons'
+        commonsLang.artifactId.text() == 'commons-lang3'
+        commonsLang.version.text() == '3.3.2'
+        commonsLang.scope.text() == 'provided'
+    }
 }

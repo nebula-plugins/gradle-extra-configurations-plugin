@@ -19,6 +19,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.publish.internal.DefaultPublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
 
 class ProvidedBasePlugin implements Plugin<Project> {
@@ -38,6 +41,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
             compileConf.extendsFrom(providedConf)
 
             configureIdeaPlugin(project, providedConf)
+            configureMavenPublishPlugin(project, providedConf)
 
         // provided needs to be available to compile, runtime, testCompile, testRuntime
         // provided needs to be absent from ivy/pom
@@ -50,6 +54,27 @@ class ProvidedBasePlugin implements Plugin<Project> {
         project.plugins.withType(IdeaPlugin) {
             project.idea.module {
                 scopes.PROVIDED.plus += providedConfiguration
+            }
+        }
+    }
+
+    private void configureMavenPublishPlugin(Project project, Configuration providedConfiguration) {
+        project.plugins.withType(MavenPublishPlugin) {
+            project.publishing {
+                publications {
+                    DefaultPublishingExtension publishingExtension = project.extensions.getByType(DefaultPublishingExtension)
+                    publishingExtension.publications.withType(MavenPublication) {
+                        pom.withXml {
+                            asNode().dependencies.dependency.findAll {
+                                it.scope.text() == JavaPlugin.RUNTIME_CONFIGURATION_NAME && providedConfiguration.allDependencies.find { dep ->
+                                    dep.name == it.artifactId.text()
+                                }
+                            }.each { runtimeDep ->
+                                runtimeDep.scope*.value = PROVIDED_CONFIGURATION_NAME
+                            }
+                        }
+                    }
+                }
             }
         }
     }

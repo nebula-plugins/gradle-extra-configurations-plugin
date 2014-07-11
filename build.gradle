@@ -15,20 +15,15 @@
  */
 buildscript {
     repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.9.11' }
+    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.12.+' }
 }
 
 description 'Plugins to add provided and optional configurations'
 apply plugin: 'nebula-plugin'
 apply plugin: 'idea'
 
-configurations {
-    optional
-}
-
 dependencies {
-    optional 'com.netflix.nebula:nebula-publishing-plugin:1.9.+'
-    testCompile 'com.netflix.nebula:nebula-test:1.9.+'
+    testCompile 'com.netflix.nebula:nebula-test:1.12.+'
 }
 
 contacts {

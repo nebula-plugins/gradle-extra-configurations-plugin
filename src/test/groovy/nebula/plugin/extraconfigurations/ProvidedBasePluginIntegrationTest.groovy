@@ -80,4 +80,29 @@ public class HelloWorldTest {
 }
 """
     }
+
+    def "Adds provided dependencies to PROVIDED scope if Idea plugin is applied"() {
+        when:
+        buildFile << """
+apply plugin: 'java'
+apply plugin: 'nebula-provided-base'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided 'org.apache.commons:commons-lang3:3.3.2'
+}
+"""
+        runTasksSuccessfully('idea')
+
+        then:
+        File ideaModuleFile = new File(projectDir, "${moduleName}.iml")
+        ideaModuleFile.exists()
+        def moduleXml = new XmlSlurper().parseText(ideaModuleFile.text)
+        def orderEntries = moduleXml.component.orderEntry.findAll { it.@type.text() == 'module-library' && it.@scope.text() == 'PROVIDED' }
+        orderEntries.find { it.library.CLASSES.root.@url.text().contains('commons-lang3-3.3.2.jar') }
+    }
 }

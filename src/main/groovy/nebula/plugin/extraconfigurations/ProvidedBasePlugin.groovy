@@ -17,7 +17,9 @@ package nebula.plugin.extraconfigurations
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.plugins.ide.idea.IdeaPlugin
 
 class ProvidedBasePlugin implements Plugin<Project> {
     static final PROVIDED_CONFIGURATION_NAME = 'provided'
@@ -35,10 +37,20 @@ class ProvidedBasePlugin implements Plugin<Project> {
 
             compileConf.extendsFrom(providedConf)
 
+            configureIdeaPlugin(project, providedConf)
+
         // provided needs to be available to compile, runtime, testCompile, testRuntime
         // provided needs to be absent from ivy/pom
         // or for ivy -- conf provided
         // or for maven -- scope provided
+        }
+    }
+
+    private void configureIdeaPlugin(Project project, Configuration providedConfiguration) {
+        project.plugins.withType(IdeaPlugin) {
+            project.idea.module {
+                scopes.PROVIDED.plus += providedConfiguration
+            }
         }
     }
 }

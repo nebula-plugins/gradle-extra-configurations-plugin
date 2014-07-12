@@ -20,6 +20,8 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.publish.internal.DefaultPublishingExtension
+import org.gradle.api.publish.ivy.IvyPublication
+import org.gradle.api.publish.ivy.plugins.IvyPublishPlugin
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
@@ -42,11 +44,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
 
             configureIdeaPlugin(project, providedConf)
             configureMavenPublishPlugin(project, providedConf)
-
-        // provided needs to be available to compile, runtime, testCompile, testRuntime
-        // provided needs to be absent from ivy/pom
-        // or for ivy -- conf provided
-        // or for maven -- scope provided
+            configureIvyPublishPlugin(project, providedConf)
         }
     }
 
@@ -65,12 +63,42 @@ class ProvidedBasePlugin implements Plugin<Project> {
                     DefaultPublishingExtension publishingExtension = project.extensions.getByType(DefaultPublishingExtension)
                     publishingExtension.publications.withType(MavenPublication) {
                         pom.withXml {
+                            // Replace dependency "runtime" scope element value with "provided"
                             asNode().dependencies.dependency.findAll {
                                 it.scope.text() == JavaPlugin.RUNTIME_CONFIGURATION_NAME && providedConfiguration.allDependencies.find { dep ->
                                     dep.name == it.artifactId.text()
                                 }
                             }.each { runtimeDep ->
                                 runtimeDep.scope*.value = PROVIDED_CONFIGURATION_NAME
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void configureIvyPublishPlugin(Project project, Configuration providedConfiguration) {
+        project.plugins.withType(IvyPublishPlugin) {
+            project.publishing {
+                publications {
+                    DefaultPublishingExtension publishingExtension = project.extensions.getByType(DefaultPublishingExtension)
+                    publishingExtension.publications.withType(IvyPublication) {
+                        descriptor.withXml {
+                            def rootNode = asNode()
+
+                            // Add provided configuration if it doesn't exist yet
+                            if(!rootNode.configurations.find { it.@name == PROVIDED_CONFIGURATION_NAME }) {
+                                rootNode.configurations[0].appendNode('conf', [name: PROVIDED_CONFIGURATION_NAME, visibility: 'public'])
+                            }
+
+                            // Replace dependency "runtime->default" conf attribute value with "provided"
+                            rootNode.dependencies.dependency.findAll {
+                                it.@conf == "$JavaPlugin.RUNTIME_CONFIGURATION_NAME->default" && providedConfiguration.allDependencies.find { dep ->
+                                    dep.name == it.@name
+                                }
+                            }.each { runtimeDep ->
+                                runtimeDep.@conf = PROVIDED_CONFIGURATION_NAME
                             }
                         }
                     }

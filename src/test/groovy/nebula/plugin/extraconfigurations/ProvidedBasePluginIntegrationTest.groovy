@@ -156,4 +156,56 @@ publishing {
         commonsLang.version.text() == '3.3.2'
         commonsLang.scope.text() == 'provided'
     }
+
+    def "Publishing provided dependencies to an Ivy repository preserves the scope"() {
+        given:
+        File repoUrl = new File(projectDir, 'build/repo')
+
+        when:
+        buildFile << """
+apply plugin: 'java'
+apply plugin: 'nebula-provided-base'
+apply plugin: 'ivy-publish'
+
+group = 'nebula.extraconf'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided 'org.apache.commons:commons-lang3:3.3.2'
+}
+
+publishing {
+    publications {
+        ivyJava(IvyPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        ivy {
+            url '$repoUrl.canonicalPath'
+        }
+    }
+}
+"""
+        createProductionJavaSourceFile()
+        runTasksSuccessfully('publish')
+
+        then:
+        true
+        File ivyFile = new File(repoUrl, "nebula.extraconf/$moduleName/1.0/ivy-1.0.xml")
+        ivyFile.exists()
+        def ivyXml = new XmlSlurper().parseText(ivyFile.text)
+        def dependencies = ivyXml.dependencies
+        dependencies.size() == 1
+        def commonsLang = dependencies.dependency[0]
+        commonsLang.@org.text() == 'org.apache.commons'
+        commonsLang.@name.text() == 'commons-lang3'
+        commonsLang.@rev.text() == '3.3.2'
+        commonsLang.@conf.text() == 'provided'
+    }
 }

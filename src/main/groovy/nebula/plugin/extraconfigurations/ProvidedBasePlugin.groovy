@@ -27,27 +27,37 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
 
 class ProvidedBasePlugin implements Plugin<Project> {
-    static final PROVIDED_CONFIGURATION_NAME = 'provided'
+    static final String PROVIDED_CONFIGURATION_NAME = 'provided'
 
     @Override
     void apply(Project project) {
         project.plugins.withType(JavaPlugin) {
-            def compileConf = project.configurations.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME)
-
-            // Our legacy provided scope, uber conf of provided and compile. This ensures what we're at least resolving with compile dependencies.
-            def providedConf = project.configurations.create(PROVIDED_CONFIGURATION_NAME)
-                    .setVisible(true)
-                    .setTransitive(true)
-                    .setDescription('much like compile, but indicates that you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.')
-
-            compileConf.extendsFrom(providedConf)
-
-            configureIdeaPlugin(project, providedConf)
-            configureMavenPublishPlugin(project, providedConf)
-            configureIvyPublishPlugin(project, providedConf)
+            Configuration providedConfiguration = createProvidedConfiguration(project)
+            configureIdeaPlugin(project, providedConfiguration)
+            configureMavenPublishPlugin(project, providedConfiguration)
+            configureIvyPublishPlugin(project, providedConfiguration)
         }
     }
 
+    private Configuration createProvidedConfiguration(Project project) {
+        Configuration compileConf = project.configurations.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME)
+
+        // Our legacy provided scope, uber conf of provided and compile. This ensures what we're at least resolving with compile dependencies.
+        def providedConf = project.configurations.create(PROVIDED_CONFIGURATION_NAME)
+                .setVisible(true)
+                .setTransitive(true)
+                .setDescription('much like compile, but indicates that you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.')
+
+        compileConf.extendsFrom(providedConf)
+        providedConf
+    }
+
+    /**
+     * Configures the IDEA plugin to add the provided configuration to the PROVIDED scope.
+     *
+     * @param project Project
+     * @param providedConfiguration Provided configuration
+     */
     private void configureIdeaPlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(IdeaPlugin) {
             project.idea.module {
@@ -56,6 +66,12 @@ class ProvidedBasePlugin implements Plugin<Project> {
         }
     }
 
+    /**
+     * Configures Maven Publishing plugin to ensure that published dependencies receive the correct scope.
+     *
+     * @param project Project
+     * @param providedConfiguration Provided configuration
+     */
     private void configureMavenPublishPlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(MavenPublishPlugin) {
             project.publishing {
@@ -78,6 +94,12 @@ class ProvidedBasePlugin implements Plugin<Project> {
         }
     }
 
+    /**
+     * Configures Ivy Publishing plugin to ensure that published dependencies receive the correct conf attribute value.
+     *
+     * @param project Project
+     * @param providedConfiguration Provided configuration
+     */
     private void configureIvyPublishPlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(IvyPublishPlugin) {
             project.publishing {

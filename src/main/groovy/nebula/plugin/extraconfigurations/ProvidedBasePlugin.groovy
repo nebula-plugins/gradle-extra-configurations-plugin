@@ -15,15 +15,15 @@
  */
 package nebula.plugin.extraconfigurations
 
+import nebula.plugin.extraconfigurations.publication.IvyPublishingConfigurer
+import nebula.plugin.extraconfigurations.publication.MavenPublishingConfigurer
+import nebula.plugin.extraconfigurations.publication.PublishingConfigurer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.publish.internal.DefaultPublishingExtension
-import org.gradle.api.publish.ivy.IvyPublication
-import org.gradle.api.publish.ivy.plugins.IvyPublishPlugin
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.api.publish.ivy.IvyModuleDescriptor
+import org.gradle.api.publish.maven.MavenPom
 import org.gradle.plugins.ide.idea.IdeaPlugin
 
 class ProvidedBasePlugin implements Plugin<Project> {
@@ -73,22 +73,17 @@ class ProvidedBasePlugin implements Plugin<Project> {
      * @param providedConfiguration Provided configuration
      */
     private void configureMavenPublishPlugin(Project project, Configuration providedConfiguration) {
-        project.plugins.withType(MavenPublishPlugin) {
-            project.publishing {
-                publications {
-                    DefaultPublishingExtension publishingExtension = project.extensions.getByType(DefaultPublishingExtension)
-                    publishingExtension.publications.withType(MavenPublication) {
-                        pom.withXml {
-                            // Replace dependency "runtime" scope element value with "provided"
-                            asNode().dependencies.dependency.findAll {
-                                it.scope.text() == JavaPlugin.RUNTIME_CONFIGURATION_NAME && providedConfiguration.allDependencies.find { dep ->
-                                    dep.name == it.artifactId.text()
-                                }
-                            }.each { runtimeDep ->
-                                runtimeDep.scope*.value = PROVIDED_CONFIGURATION_NAME
-                            }
-                        }
+        PublishingConfigurer mavenPublishingConfigurer = new MavenPublishingConfigurer(project)
+
+        mavenPublishingConfigurer.withPublication { MavenPom pom ->
+            pom.withXml {
+                // Replace dependency "runtime" scope element value with "provided"
+                asNode().dependencies.dependency.findAll {
+                    it.scope.text() == JavaPlugin.RUNTIME_CONFIGURATION_NAME && providedConfiguration.allDependencies.find { dep ->
+                        dep.name == it.artifactId.text()
                     }
+                }.each { runtimeDep ->
+                    runtimeDep.scope*.value = PROVIDED_CONFIGURATION_NAME
                 }
             }
         }
@@ -101,29 +96,24 @@ class ProvidedBasePlugin implements Plugin<Project> {
      * @param providedConfiguration Provided configuration
      */
     private void configureIvyPublishPlugin(Project project, Configuration providedConfiguration) {
-        project.plugins.withType(IvyPublishPlugin) {
-            project.publishing {
-                publications {
-                    DefaultPublishingExtension publishingExtension = project.extensions.getByType(DefaultPublishingExtension)
-                    publishingExtension.publications.withType(IvyPublication) {
-                        descriptor.withXml {
-                            def rootNode = asNode()
+        PublishingConfigurer ivyPublishingConfigurer = new IvyPublishingConfigurer(project)
 
-                            // Add provided configuration if it doesn't exist yet
-                            if(!rootNode.configurations.find { it.@name == PROVIDED_CONFIGURATION_NAME }) {
-                                rootNode.configurations[0].appendNode('conf', [name: PROVIDED_CONFIGURATION_NAME, visibility: 'public'])
-                            }
+        ivyPublishingConfigurer.withPublication { IvyModuleDescriptor descriptor ->
+            descriptor.withXml {
+                def rootNode = asNode()
 
-                            // Replace dependency "runtime->default" conf attribute value with "provided"
-                            rootNode.dependencies.dependency.findAll {
-                                it.@conf == "$JavaPlugin.RUNTIME_CONFIGURATION_NAME->default" && providedConfiguration.allDependencies.find { dep ->
-                                    dep.name == it.@name
-                                }
-                            }.each { runtimeDep ->
-                                runtimeDep.@conf = PROVIDED_CONFIGURATION_NAME
-                            }
-                        }
+                // Add provided configuration if it doesn't exist yet
+                if(!rootNode.configurations.find { it.@name == PROVIDED_CONFIGURATION_NAME }) {
+                    rootNode.configurations[0].appendNode('conf', [name: PROVIDED_CONFIGURATION_NAME, visibility: 'public'])
+                }
+
+                // Replace dependency "runtime->default" conf attribute value with "provided"
+                rootNode.dependencies.dependency.findAll {
+                    it.@conf == "$JavaPlugin.RUNTIME_CONFIGURATION_NAME->default" && providedConfiguration.allDependencies.find { dep ->
+                        dep.name == it.@name
                     }
+                }.each { runtimeDep ->
+                    runtimeDep.@conf = PROVIDED_CONFIGURATION_NAME
                 }
             }
         }

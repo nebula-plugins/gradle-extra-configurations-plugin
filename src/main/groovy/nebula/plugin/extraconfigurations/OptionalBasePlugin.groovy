@@ -15,13 +15,13 @@
  */
 package nebula.plugin.extraconfigurations
 
+import nebula.plugin.extraconfigurations.publication.IvyPublishingConfigurer
+import nebula.plugin.extraconfigurations.publication.MavenPublishingConfigurer
+import nebula.plugin.extraconfigurations.publication.PublishingConfigurer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.publish.internal.DefaultPublishingExtension
-import org.gradle.api.publish.ivy.IvyPublication
-import org.gradle.api.publish.ivy.plugins.IvyPublishPlugin
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.api.publish.ivy.IvyModuleDescriptor
+import org.gradle.api.publish.maven.MavenPom
 
 class OptionalBasePlugin implements Plugin<Project> {
     static final String OPTIONAL_IDENTIFIER = 'optional'
@@ -55,26 +55,21 @@ class OptionalBasePlugin implements Plugin<Project> {
      * @param project Project
      */
     private void configureMavenPublishPlugin(Project project) {
-        project.plugins.withType(MavenPublishPlugin) {
-            project.publishing {
-                publications {
-                    DefaultPublishingExtension publishingExtension = project.extensions.getByType(DefaultPublishingExtension)
-                    publishingExtension.publications.withType(MavenPublication) {
-                        pom.withXml {
-                            project.ext.optionalDeps.each { dep ->
-                                def foundDep = asNode().dependencies.dependency.find {
-                                    it.artifactId.text() == dep.name
-                                }
+        PublishingConfigurer mavenPublishingConfigurer = new MavenPublishingConfigurer(project)
 
-                                if(foundDep) {
-                                    if(foundDep.optional) {
-                                        foundDep.optional.value = 'true'
-                                    }
-                                    else {
-                                        foundDep.appendNode(OPTIONAL_IDENTIFIER, 'true')
-                                    }
-                                }
-                            }
+        mavenPublishingConfigurer.withPublication { MavenPom pom ->
+            pom.withXml {
+                project.ext.optionalDeps.each { dep ->
+                    def foundDep = asNode().dependencies.dependency.find {
+                        it.artifactId.text() == dep.name
+                    }
+
+                    if(foundDep) {
+                        if(foundDep.optional) {
+                            foundDep.optional.value = 'true'
+                        }
+                        else {
+                            foundDep.appendNode(OPTIONAL_IDENTIFIER, 'true')
                         }
                     }
                 }
@@ -88,26 +83,21 @@ class OptionalBasePlugin implements Plugin<Project> {
      * @param project Project
      */
     private void configureIvyPublishPlugin(Project project) {
-        project.plugins.withType(IvyPublishPlugin) {
-            project.publishing {
-                publications {
-                    DefaultPublishingExtension publishingExtension = project.extensions.getByType(DefaultPublishingExtension)
-                    publishingExtension.publications.withType(IvyPublication) {
-                        descriptor.withXml {
-                            def rootNode = asNode()
+        PublishingConfigurer ivyPublishingConfigurer = new IvyPublishingConfigurer(project)
 
-                            // Add optional configuration if it doesn't exist yet
-                            if(!rootNode.configurations.find { it.@name == OPTIONAL_IDENTIFIER }) {
-                                rootNode.configurations[0].appendNode('conf', [name: OPTIONAL_IDENTIFIER, visibility: 'public'])
-                            }
+        ivyPublishingConfigurer.withPublication { IvyModuleDescriptor descriptor ->
+            descriptor.withXml {
+                def rootNode = asNode()
 
-                            // Replace dependency "runtime->default" conf attribute value with "optional"
-                            project.ext.optionalDeps.each { dep ->
-                                def foundDep = rootNode.dependencies.dependency.find { it.@name == dep.name }
-                                foundDep?.@conf = OPTIONAL_IDENTIFIER
-                            }
-                        }
-                    }
+                // Add optional configuration if it doesn't exist yet
+                if(!rootNode.configurations.find { it.@name == OPTIONAL_IDENTIFIER }) {
+                    rootNode.configurations[0].appendNode('conf', [name: OPTIONAL_IDENTIFIER, visibility: 'public'])
+                }
+
+                // Replace dependency "runtime->default" conf attribute value with "optional"
+                project.ext.optionalDeps.each { dep ->
+                    def foundDep = rootNode.dependencies.dependency.find { it.@name == dep.name }
+                    foundDep?.@conf = OPTIONAL_IDENTIFIER
                 }
             }
         }

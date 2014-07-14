@@ -38,8 +38,7 @@ The JAR file comes with two plugins:
         <td>gradle-provided-base</td>
         <td>-</td>
         <td>ProvidedBasePlugin</td>
-        <td>Creates a new configuration named `provided` similar to `providedCompile` created by the
-            [War](http://www.gradle.org/docs/current/userguide/war_plugin.html) plugin.</td>
+        <td>Creates a new configuration named `provided` similar to `providedCompile` created by the [War plugin](http://www.gradle.org/docs/current/userguide/war_plugin.html).</td>
     </tr>
     <tr>
         <td>gradle-optional-base</td>
@@ -65,8 +64,8 @@ required transitive dependency.
 
 This is what the [Maven documentation](http://maven.apache.org/pom.html#Dependencies) says:
 
->> **provided** - this is much like compile, but indicates you expect the JDK or a container to provide it at runtime.
->> It is only available on the compilation and test classpath, and is not transitive.
+> **provided** - this is much like compile, but indicates you expect the JDK or a container to provide it at runtime.
+> It is only available on the compilation and test classpath, and is not transitive.
 
 #### Impact on metadata created when publishing artifact
 
@@ -98,7 +97,7 @@ When publishing a provided dependency to an Ivy repository the declaration in th
         </dependencies>
     </ivy-module>
 
-#### Example
+#### Usage example
 
     apply plugin: 'java'
     apply plugin: 'nebula-provided-base'
@@ -149,7 +148,7 @@ When publishing a optional dependency to an Ivy repository the declaration in th
         </dependencies>
     </ivy-module>
 
-#### Example
+#### Usage example
 
     apply plugin: 'java'
     apply plugin: 'nebula-optional-base'

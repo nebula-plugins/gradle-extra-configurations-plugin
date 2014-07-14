@@ -39,7 +39,7 @@ class OptionalBasePlugin implements Plugin<Project> {
      * a) a extra property List that holds optional dependencies
      * b) a extra method that can be executed as parameter when declaring dependencies
      *
-     * @param project
+     * @param project Project
      */
     private void enhanceProjectModel(Project project) {
         project.ext.optionalDeps = []

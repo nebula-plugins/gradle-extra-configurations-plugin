@@ -38,7 +38,8 @@ The JAR file comes with two plugins:
         <td>gradle-provided-base</td>
         <td>-</td>
         <td>ProvidedBasePlugin</td>
-        <td>Creates a new configuration named `provided` similar to `providedCompile` created by the [War plugin](http://www.gradle.org/docs/current/userguide/war_plugin.html).</td>
+        <td>Creates a new configuration named provided similar to providedCompile created by the
+        <a href="http://www.gradle.org/docs/current/userguide/war_plugin.html">War plugin</a>.</td>
     </tr>
     <tr>
         <td>gradle-optional-base</td>

@@ -3,13 +3,13 @@ Nebula Extra Configurations
 
 This plugin allows dependencies to be declared with a configuration or attribute not available in Gradle core.
 
-    * `provided`
-    * `optional`
+* `provided`
+* `optional`
 
 The following publishing plugins support the correct handling when generating the relevant metadata:
 
-    * [Maven Publishing](http://www.gradle.org/docs/current/userguide/publishing_maven.html)
-    * [Ivy Publishing](http://www.gradle.org/docs/current/userguide/publishing_ivy.html)
+* [Maven Publishing](http://www.gradle.org/docs/current/userguide/publishing_maven.html)
+* [Ivy Publishing](http://www.gradle.org/docs/current/userguide/publishing_ivy.html)
 
 ## Usage
 

@@ -53,7 +53,6 @@ publishing {
     }
 }
 """
-        createProductionJavaSourceFile()
         runTasksSuccessfully('publish')
 
         then:
@@ -105,7 +104,6 @@ publishing {
     }
 }
 """
-        createProductionJavaSourceFile()
         runTasksSuccessfully('publish')
 
         then:
@@ -120,20 +118,5 @@ publishing {
         commonsLang.@name.text() == 'commons-lang3'
         commonsLang.@rev.text() == '3.3.2'
         commonsLang.@conf.text() == 'optional'
-    }
-
-    private void createProductionJavaSourceFile() {
-        File javaFile = createFile("src/main/java/nebula/extraconf/HelloWorld.java")
-        javaFile << """
-package nebula.extraconf;
-
-import org.apache.commons.lang3.StringUtils;
-
-public class HelloWorld {
-    public String getMessage() {
-        return StringUtils.upperCase("Hello World!");
-    }
-}
-"""
     }
 }

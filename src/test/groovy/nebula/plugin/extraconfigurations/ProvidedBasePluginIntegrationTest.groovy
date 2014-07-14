@@ -156,7 +156,6 @@ publishing {
     }
 }
 """
-        createProductionJavaSourceFile()
         runTasksSuccessfully('publish')
 
         then:
@@ -207,7 +206,6 @@ publishing {
     }
 }
 """
-        createProductionJavaSourceFile()
         runTasksSuccessfully('publish')
 
         then:

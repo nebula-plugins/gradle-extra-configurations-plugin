@@ -20,8 +20,8 @@ import nebula.plugin.extraconfigurations.publication.MavenPublishingConfigurer
 import nebula.plugin.extraconfigurations.publication.PublishingConfigurer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.publish.ivy.IvyModuleDescriptor
-import org.gradle.api.publish.maven.MavenPom
+import org.gradle.api.publish.ivy.IvyPublication
+import org.gradle.api.publish.maven.MavenPublication
 
 class OptionalBasePlugin implements Plugin<Project> {
     static final String OPTIONAL_IDENTIFIER = 'optional'
@@ -57,8 +57,8 @@ class OptionalBasePlugin implements Plugin<Project> {
     private void configureMavenPublishPlugin(Project project) {
         PublishingConfigurer mavenPublishingConfigurer = new MavenPublishingConfigurer(project)
 
-        mavenPublishingConfigurer.withPublication { MavenPom pom ->
-            pom.withXml {
+        mavenPublishingConfigurer.withPublication { MavenPublication publication ->
+            publication.pom.withXml {
                 project.ext.optionalDeps.each { dep ->
                     def foundDep = asNode().dependencies.dependency.find {
                         it.artifactId.text() == dep.name
@@ -85,8 +85,8 @@ class OptionalBasePlugin implements Plugin<Project> {
     private void configureIvyPublishPlugin(Project project) {
         PublishingConfigurer ivyPublishingConfigurer = new IvyPublishingConfigurer(project)
 
-        ivyPublishingConfigurer.withPublication { IvyModuleDescriptor descriptor ->
-            descriptor.withXml {
+        ivyPublishingConfigurer.withPublication { IvyPublication publication ->
+            publication.descriptor.withXml {
                 def rootNode = asNode()
 
                 // Add optional configuration if it doesn't exist yet

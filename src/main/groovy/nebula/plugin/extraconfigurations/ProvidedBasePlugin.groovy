@@ -22,8 +22,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.publish.ivy.IvyModuleDescriptor
-import org.gradle.api.publish.maven.MavenPom
+import org.gradle.api.publish.ivy.IvyPublication
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.plugins.ide.idea.IdeaPlugin
 
 class ProvidedBasePlugin implements Plugin<Project> {
@@ -75,8 +75,8 @@ class ProvidedBasePlugin implements Plugin<Project> {
     private void configureMavenPublishPlugin(Project project, Configuration providedConfiguration) {
         PublishingConfigurer mavenPublishingConfigurer = new MavenPublishingConfigurer(project)
 
-        mavenPublishingConfigurer.withPublication { MavenPom pom ->
-            pom.withXml {
+        mavenPublishingConfigurer.withPublication { MavenPublication publication ->
+            publication.pom.withXml {
                 // Replace dependency "runtime" scope element value with "provided"
                 asNode().dependencies.dependency.findAll {
                     it.scope.text() == JavaPlugin.RUNTIME_CONFIGURATION_NAME && providedConfiguration.allDependencies.find { dep ->
@@ -98,8 +98,8 @@ class ProvidedBasePlugin implements Plugin<Project> {
     private void configureIvyPublishPlugin(Project project, Configuration providedConfiguration) {
         PublishingConfigurer ivyPublishingConfigurer = new IvyPublishingConfigurer(project)
 
-        ivyPublishingConfigurer.withPublication { IvyModuleDescriptor descriptor ->
-            descriptor.withXml {
+        ivyPublishingConfigurer.withPublication { IvyPublication publication ->
+            publication.descriptor.withXml {
                 def rootNode = asNode()
 
                 // Add provided configuration if it doesn't exist yet

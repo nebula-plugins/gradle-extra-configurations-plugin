@@ -16,9 +16,9 @@
 package nebula.plugin.extraconfigurations.publication
 
 import org.gradle.api.Project
-import org.gradle.api.publish.internal.DefaultPublishingExtension
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.ivy.IvyPublication
-import org.gradle.api.publish.ivy.plugins.IvyPublishPlugin
+import org.gradle.api.publish.plugins.PublishingPlugin
 
 class IvyPublishingConfigurer implements PublishingConfigurer {
     private final Project project
@@ -29,15 +29,20 @@ class IvyPublishingConfigurer implements PublishingConfigurer {
 
     @Override
     void withPublication(Closure closure) {
-        project.plugins.withType(IvyPublishPlugin) {
-            project.publishing {
-                publications {
-                    DefaultPublishingExtension publishingExtension = project.extensions.getByType(DefaultPublishingExtension)
-                    publishingExtension.publications.withType(IvyPublication) { IvyPublication publication ->
-                        closure(publication.descriptor)
-                    }
-                }
+        Closure addArtifactClosure = {
+            // Wait for our plugin to be applied.
+            project.plugins.withType(PublishingPlugin) { PublishingPlugin publishingPlugin ->
+                PublishingExtension publishingExtension = project.extensions.getByType(PublishingExtension)
+                publishingExtension.publications.withType(IvyPublication, closure)
             }
+        }
+
+        // It's possible that we're running in someone else's afterEvaluate, which means we need to run this immediately
+        if(project.state.executed) {
+            addArtifactClosure()
+        }
+        else {
+            project.afterEvaluate addArtifactClosure
         }
     }
 }

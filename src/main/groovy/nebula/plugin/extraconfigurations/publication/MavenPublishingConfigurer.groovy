@@ -16,33 +16,16 @@
 package nebula.plugin.extraconfigurations.publication
 
 import org.gradle.api.Project
-import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.Publication
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.plugins.PublishingPlugin
 
-class MavenPublishingConfigurer implements PublishingConfigurer {
-    private final Project project
-
+class MavenPublishingConfigurer extends AbstractPublishingConfigurer {
     MavenPublishingConfigurer(Project project) {
-        this.project = project
+        super(project)
     }
 
     @Override
-    void withPublication(Closure closure) {
-        Closure addArtifactClosure = {
-            // Wait for our plugin to be applied.
-            project.plugins.withType(PublishingPlugin) { PublishingPlugin publishingPlugin ->
-                PublishingExtension publishingExtension = project.extensions.getByType(PublishingExtension)
-                publishingExtension.publications.withType(MavenPublication, closure)
-            }
-        }
-
-        // It's possible that we're running in someone else's afterEvaluate, which means we need to run this immediately
-        if(project.state.executed) {
-            addArtifactClosure()
-        }
-        else {
-            project.afterEvaluate addArtifactClosure
-        }
+    Class<? extends Publication> getPublicationType() {
+        MavenPublication
     }
 }

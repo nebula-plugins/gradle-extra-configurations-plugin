@@ -15,6 +15,9 @@
  */
 package nebula.plugin.extraconfigurations.publication
 
+import org.gradle.api.publish.Publication
+
 interface PublishingConfigurer {
+    Class<? extends Publication> getPublicationType()
     void withPublication(Closure closure)
 }

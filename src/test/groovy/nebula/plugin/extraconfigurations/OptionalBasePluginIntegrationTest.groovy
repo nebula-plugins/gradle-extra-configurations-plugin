@@ -16,8 +16,104 @@
 package nebula.plugin.extraconfigurations
 
 import nebula.test.IntegrationSpec
+import nebula.test.dependencies.DependencyGraph
+import nebula.test.dependencies.GradleDependencyGenerator
+import nebula.test.functional.ExecutionResult
 
 class OptionalBasePluginIntegrationTest extends IntegrationSpec {
+    def "Can use optional"() {
+        given:
+        File baseDir = new File(projectDir, 'build')
+        File mavenRepoDir = new File(baseDir, 'mavenrepo')
+        def generator = new GradleDependencyGenerator(new DependencyGraph(['foo:bar:2.4 -> custom:baz:5.1.27', 'custom:baz:5.1.27']), baseDir.canonicalPath)
+        generator.generateTestMavenRepo()
+
+        when:
+        buildFile << """
+apply plugin: 'java'
+apply plugin: 'nebula-optional-base'
+
+repositories {
+    maven { url '$mavenRepoDir.canonicalPath' }
+}
+
+dependencies {
+    compile 'foo:bar:2.4', optional
+}
+"""
+        ExecutionResult result = runTasksSuccessfully('dependencies')
+
+        then:
+        result.standardOutput.contains("""
+compile - Compile classpath for source set 'main'.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+
+default - Configuration for default artifacts.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+
+runtime - Runtime classpath for source set 'main'.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+
+testCompile - Compile classpath for source set 'test'.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+
+testRuntime - Runtime classpath for source set 'test'.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+""")
+    }
+
+    def "Can combine optional with other operators"() {
+        given:
+        File baseDir = new File(projectDir, 'build')
+        File mavenRepoDir = new File(baseDir, 'mavenrepo')
+        def generator = new GradleDependencyGenerator(new DependencyGraph(['foo:bar:2.4 -> custom:baz:5.1.27', 'custom:baz:5.1.27']), baseDir.canonicalPath)
+        generator.generateTestMavenRepo()
+
+        when:
+        buildFile << """
+apply plugin: 'java'
+apply plugin: 'nebula-optional-base'
+
+ext.excludeOptional = { dep ->
+    exclude module: 'baz'
+    optional(dep)
+}
+
+repositories {
+    maven { url '$mavenRepoDir.canonicalPath' }
+}
+
+dependencies {
+    compile 'foo:bar:2.4', excludeOptional
+}
+"""
+        ExecutionResult result = runTasksSuccessfully('dependencies')
+
+        then:
+        result.standardOutput.contains("""
+compile - Compile classpath for source set 'main'.
+\\--- foo:bar:2.4
+
+default - Configuration for default artifacts.
+\\--- foo:bar:2.4
+
+runtime - Runtime classpath for source set 'main'.
+\\--- foo:bar:2.4
+
+testCompile - Compile classpath for source set 'test'.
+\\--- foo:bar:2.4
+
+testRuntime - Runtime classpath for source set 'test'.
+\\--- foo:bar:2.4
+""")
+        !result.standardOutput.contains('custom:baz:5.1.27')
+    }
+
     def "Publishing provided dependencies to a Maven repository preserves the scope"() {
         given:
         File repoUrl = new File(projectDir, 'build/repo')

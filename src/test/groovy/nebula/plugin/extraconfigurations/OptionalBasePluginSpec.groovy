@@ -76,4 +76,28 @@ class OptionalBasePluginSpec extends ProjectSpec {
         optionalDependency.version == '2.4'
         optionalDependency.configuration == 'default'
     }
+
+    def "Can combine optional with other operators"() {
+        when:
+        project.ext.excludeOptional = { dep ->
+            exclude module: 'some-module'
+            project.ext.optional(dep)
+        }
+
+        project.configurations {
+            myConf
+        }
+
+        project.dependencies {
+            myConf 'commons-io:commons-io:2.4', project.ext.excludeOptional
+        }
+
+        then:
+        project.ext.optionalDeps.size() == 1
+        def optionalDependency = project.ext.optionalDeps[0]
+        optionalDependency.group == 'commons-io'
+        optionalDependency.name == 'commons-io'
+        optionalDependency.version == '2.4'
+        optionalDependency.configuration == 'default'
+    }
 }

@@ -15,32 +15,107 @@
  */
 package nebula.plugin.extraconfigurations
 
+import nebula.plugin.extraconfigurations.publication.IvyPublishingConfigurer
+import nebula.plugin.extraconfigurations.publication.MavenPublishingConfigurer
+import nebula.plugin.extraconfigurations.publication.PublishingConfigurer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.publish.ivy.IvyPublication
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.plugins.ide.idea.IdeaPlugin
 
 class ProvidedBasePlugin implements Plugin<Project> {
-    private static Logger logger = Logging.getLogger(ProvidedBasePlugin)
+    static final String PROVIDED_CONFIGURATION_NAME = 'provided'
 
     @Override
     void apply(Project project) {
         project.plugins.withType(JavaPlugin) {
-            def compileConf = project.configurations.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME)
+            Configuration providedConfiguration = createProvidedConfiguration(project)
+            configureIdeaPlugin(project, providedConfiguration)
+            configureMavenPublishPlugin(project, providedConfiguration)
+            configureIvyPublishPlugin(project, providedConfiguration)
+        }
+    }
 
-            // Our legacy provided scope, uber conf of provided and compile. This ensures what we're at least resolving with compile dependencies.
-            def providedConf = project.configurations.create('provided')
-                    .setVisible(true)
-                    .setTransitive(true)
-                    .setDescription('much like compile, but indicates that you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.')
+    private Configuration createProvidedConfiguration(Project project) {
+        Configuration compileConf = project.configurations.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME)
 
-            compileConf.extendsFrom(providedConf)
+        // Our legacy provided scope, uber conf of provided and compile. This ensures what we're at least resolving with compile dependencies.
+        def providedConf = project.configurations.create(PROVIDED_CONFIGURATION_NAME)
+                .setVisible(true)
+                .setTransitive(true)
+                .setDescription('much like compile, but indicates that you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.')
 
-        // provided needs to be available to compile, runtime, testCompile, testRuntime
-        // provided needs to be absent from ivy/pom
-        // or for ivy -- conf provided
-        // or for maven -- scope provided
+        compileConf.extendsFrom(providedConf)
+        providedConf
+    }
+
+    /**
+     * Configures the IDEA plugin to add the provided configuration to the PROVIDED scope.
+     *
+     * @param project Project
+     * @param providedConfiguration Provided configuration
+     */
+    private void configureIdeaPlugin(Project project, Configuration providedConfiguration) {
+        project.plugins.withType(IdeaPlugin) {
+            project.idea.module {
+                scopes.PROVIDED.plus += providedConfiguration
+            }
+        }
+    }
+
+    /**
+     * Configures Maven Publishing plugin to ensure that published dependencies receive the correct scope.
+     *
+     * @param project Project
+     * @param providedConfiguration Provided configuration
+     */
+    private void configureMavenPublishPlugin(Project project, Configuration providedConfiguration) {
+        PublishingConfigurer mavenPublishingConfigurer = new MavenPublishingConfigurer(project)
+
+        mavenPublishingConfigurer.withPublication { MavenPublication publication ->
+            publication.pom.withXml {
+                // Replace dependency "runtime" scope element value with "provided"
+                asNode().dependencies.dependency.findAll {
+                    it.scope.text() == JavaPlugin.RUNTIME_CONFIGURATION_NAME && providedConfiguration.allDependencies.find { dep ->
+                        dep.name == it.artifactId.text()
+                    }
+                }.each { runtimeDep ->
+                    runtimeDep.scope*.value = PROVIDED_CONFIGURATION_NAME
+                }
+            }
+        }
+    }
+
+    /**
+     * Configures Ivy Publishing plugin to ensure that published dependencies receive the correct conf attribute value.
+     *
+     * @param project Project
+     * @param providedConfiguration Provided configuration
+     */
+    private void configureIvyPublishPlugin(Project project, Configuration providedConfiguration) {
+        PublishingConfigurer ivyPublishingConfigurer = new IvyPublishingConfigurer(project)
+
+        ivyPublishingConfigurer.withPublication { IvyPublication publication ->
+            publication.descriptor.withXml {
+                def rootNode = asNode()
+
+                // Add provided configuration if it doesn't exist yet
+                if(!rootNode.configurations.find { it.@name == PROVIDED_CONFIGURATION_NAME }) {
+                    rootNode.configurations[0].appendNode('conf', [name: PROVIDED_CONFIGURATION_NAME, visibility: 'public'])
+                }
+
+                // Replace dependency "runtime->default" conf attribute value with "provided"
+                rootNode.dependencies.dependency.findAll {
+                    it.@conf == "$JavaPlugin.RUNTIME_CONFIGURATION_NAME->default" && providedConfiguration.allDependencies.find { dep ->
+                        dep.name == it.@name
+                    }
+                }.each { runtimeDep ->
+                    runtimeDep.@conf = PROVIDED_CONFIGURATION_NAME
+                }
+            }
         }
     }
 }

@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-buildscript {
-    repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.12.+' }
-}
+package nebula.plugin.extraconfigurations.publication
 
-description 'Plugins to add provided and optional configurations'
-apply plugin: 'nebula-plugin'
-apply plugin: 'idea'
+import org.gradle.api.publish.Publication
 
-dependencies {
-    testCompile 'com.netflix.nebula:nebula-test:1.12.+'
-}
-
-contacts {
-    'rob.spieldenner@gmail.com' {
-        moniker 'Rob Spieldenner'
-        github 'rspieldenner'
-    }
+interface PublishingConfigurer {
+    Class<? extends Publication> getPublicationType()
+    void withPublication(Closure closure)
 }

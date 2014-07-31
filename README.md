@@ -51,11 +51,11 @@ The JAR file comes with two plugins:
 
 To use the Provided plugin, include the following code snippet in your build script:
 
-    apply plugin: 'gradle-provided-base'
+    apply plugin: 'nebula.provided-base'
 
 To use the Optional plugin, include the following code snippet in your build script:
 
-    apply plugin: 'gradle-optional-base'
+    apply plugin: 'nebula.optional-base'
 
 ### Using the provided plugin
 

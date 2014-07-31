@@ -5,7 +5,7 @@ import nebula.test.ProjectSpec
 class OptionalBasePluginSpec extends ProjectSpec {
     @Override
     String getPluginName() {
-        'nebula-optional-base'
+        'optional-base'
     }
 
     def setup() {

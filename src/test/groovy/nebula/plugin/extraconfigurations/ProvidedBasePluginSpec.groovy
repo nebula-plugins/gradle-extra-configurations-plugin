@@ -25,7 +25,7 @@ import org.gradle.api.tasks.SourceSet
 class ProvidedBasePluginSpec extends ProjectSpec {
     @Override
     String getPluginName() {
-        'nebula-provided-base'
+        'provided-base'
     }
 
     def "Does not create provided configuration if Java plugin is not applied"() {

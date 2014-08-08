@@ -1,8 +1,9 @@
 package nebula.plugin.extraconfigurations
 
-import nebula.test.ProjectSpec
+import nebula.test.PluginProjectSpec
 
-class OptionalBasePluginSpec extends ProjectSpec {
+class OptionalBasePluginSpec extends PluginProjectSpec {
+
     @Override
     String getPluginName() {
         'optional-base'

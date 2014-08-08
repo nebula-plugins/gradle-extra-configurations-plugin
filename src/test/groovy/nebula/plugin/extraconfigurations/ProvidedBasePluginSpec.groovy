@@ -15,14 +15,14 @@
  */
 package nebula.plugin.extraconfigurations
 
-import nebula.test.ProjectSpec
+import nebula.test.PluginProjectSpec
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvedConfiguration
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 
-class ProvidedBasePluginSpec extends ProjectSpec {
+class ProvidedBasePluginSpec extends PluginProjectSpec {
     @Override
     String getPluginName() {
         'provided-base'

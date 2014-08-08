@@ -31,7 +31,7 @@ class OptionalBasePluginIntegrationTest extends IntegrationSpec {
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.optional-base'
+apply plugin: 'optional-base'
 
 repositories {
     maven { url '$mavenRepoDir.canonicalPath' }
@@ -77,7 +77,7 @@ testRuntime - Runtime classpath for source set 'test'.
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.optional-base'
+apply plugin: 'optional-base'
 
 ext.excludeOptional = { dep ->
     exclude module: 'baz'
@@ -121,7 +121,7 @@ testRuntime - Runtime classpath for source set 'test'.
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.optional-base'
+apply plugin: 'optional-base'
 apply plugin: 'maven-publish'
 
 group = 'nebula.extraconf'
@@ -172,7 +172,7 @@ publishing {
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.optional-base'
+apply plugin: 'optional-base'
 apply plugin: 'ivy-publish'
 
 group = 'nebula.extraconf'

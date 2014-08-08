@@ -22,7 +22,7 @@ class ProvidedBasePluginIntegrationTest extends IntegrationSpec {
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.provided-base'
+apply plugin: 'provided-base'
 
 repositories {
     mavenCentral()
@@ -43,7 +43,7 @@ dependencies {
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.provided-base'
+apply plugin: 'provided-base'
 
 repositories {
     mavenCentral()
@@ -100,7 +100,7 @@ public class HelloWorldTest {
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.provided-base'
+apply plugin: 'provided-base'
 apply plugin: 'idea'
 
 repositories {
@@ -128,7 +128,7 @@ dependencies {
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.provided-base'
+apply plugin: 'provided-base'
 apply plugin: 'maven-publish'
 
 group = 'nebula.extraconf'
@@ -178,7 +178,7 @@ publishing {
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.provided-base'
+apply plugin: 'provided-base'
 apply plugin: 'ivy-publish'
 
 group = 'nebula.extraconf'

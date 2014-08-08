@@ -61,7 +61,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
     private void configureIdeaPlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(IdeaPlugin) {
             project.idea.module {
-                scopes.PROVIDED.plus += providedConfiguration
+                scopes.PROVIDED.plus += [providedConfiguration]
             }
         }
     }

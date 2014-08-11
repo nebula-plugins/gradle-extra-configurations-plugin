@@ -121,6 +121,29 @@ dependencies {
         orderEntries.find { it.library.CLASSES.root.@url.text().contains('commons-lang3-3.3.2.jar') }
     }
 
+    def 'verify eclipse add provided'() {
+        buildFile << '''\
+            apply plugin: 'java'
+            apply plugin: 'nebula.provided-base'
+            apply plugin: 'eclipse'
+
+            repositories { mavenCentral() }
+
+            dependencies {
+                provided 'org.apache.commons:commons-lang3:3.3.2'
+            }
+        '''.stripIndent()
+
+        when:
+        runTasksSuccessfully('eclipse')
+
+        then:
+        File eclipseClasspath = new File(projectDir, '.classpath')
+        eclipseClasspath.exists()
+        def classpathXml = new XmlSlurper().parseText(eclipseClasspath.text)
+        classpathXml.classpath.classpathentry.find { it?.@path?.contains 'org.apache.commons/commons-lang3/3.3.2' } != null
+    }
+
     def "Publishing provided dependencies to a Maven repository preserves the scope"() {
         given:
         File repoUrl = new File(projectDir, 'build/repo')
@@ -189,6 +212,7 @@ repositories {
 }
 
 dependencies {
+    compile 'com.google.guava:guava:16.0'
     provided 'org.apache.commons:commons-lang3:3.3.2'
 }
 
@@ -215,7 +239,7 @@ publishing {
         def ivyXml = new XmlSlurper().parseText(ivyFile.text)
         def dependencies = ivyXml.dependencies
         dependencies.size() == 1
-        def commonsLang = dependencies.dependency[0]
+        def commonsLang = dependencies.dependency[1]
         commonsLang.@org.text() == 'org.apache.commons'
         commonsLang.@name.text() == 'commons-lang3'
         commonsLang.@rev.text() == '3.3.2'

@@ -24,6 +24,7 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.plugins.ide.eclipse.EclipsePlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
 
 class ProvidedBasePlugin implements Plugin<Project> {
@@ -34,6 +35,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
         project.plugins.withType(JavaPlugin) {
             Configuration providedConfiguration = createProvidedConfiguration(project)
             configureIdeaPlugin(project, providedConfiguration)
+            configureEclipsePlugin(project, providedConfiguration)
             configureMavenPublishPlugin(project, providedConfiguration)
             configureIvyPublishPlugin(project, providedConfiguration)
         }
@@ -61,8 +63,20 @@ class ProvidedBasePlugin implements Plugin<Project> {
     private void configureIdeaPlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(IdeaPlugin) {
             project.idea.module {
-                scopes.PROVIDED.plus += providedConfiguration
+                scopes.PROVIDED.plus += [ providedConfiguration ]
             }
+        }
+    }
+
+    /**
+     * Configures the Eclipse plugin to add the provided configuration.
+     *
+     * @param project Project
+     * @param providedConfiguration Provided configuration
+     */
+    private void configureEclipsePlugin(Project project, Configuration providedConfiguration) {
+        project.plugins.withType(EclipsePlugin) {
+            project.eclipse.classpath.plusConfigurations += providedConfiguration
         }
     }
 

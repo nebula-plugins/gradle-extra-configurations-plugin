@@ -76,7 +76,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
      */
     private void configureEclipsePlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(EclipsePlugin) {
-            project.eclipse.classpath.plusConfigurations += providedConfiguration
+            project.eclipse.classpath.plusConfigurations += [ providedConfiguration ]
         }
     }
 

@@ -35,14 +35,14 @@ The JAR file comes with two plugins:
         <th>Description</th>
     </tr>
     <tr>
-        <td>gradle-provided-base</td>
+        <td>provided-base</td>
         <td>-</td>
         <td>ProvidedBasePlugin</td>
         <td>Creates a new configuration named provided similar to providedCompile created by the
         <a href="http://www.gradle.org/docs/current/userguide/war_plugin.html">War plugin</a>.</td>
     </tr>
     <tr>
-        <td>gradle-optional-base</td>
+        <td>optional-base</td>
         <td>-</td>
         <td>OptionalBasePlugin</td>
         <td>Provides an extra method for marking dependencies as optional.</td>
@@ -51,11 +51,11 @@ The JAR file comes with two plugins:
 
 To use the Provided plugin, include the following code snippet in your build script:
 
-    apply plugin: 'nebula.provided-base'
+    apply plugin: 'provided-base'
 
 To use the Optional plugin, include the following code snippet in your build script:
 
-    apply plugin: 'nebula.optional-base'
+    apply plugin: 'optional-base'
 
 ### Using the provided plugin
 
@@ -101,7 +101,7 @@ When publishing a provided dependency to an Ivy repository the declaration in th
 #### Usage example
 
     apply plugin: 'java'
-    apply plugin: 'nebula-provided-base'
+    apply plugin: 'provided-base'
 
     repositories {
         mavenCentral()
@@ -152,7 +152,7 @@ When publishing a optional dependency to an Ivy repository the declaration in th
 #### Usage example
 
     apply plugin: 'java'
-    apply plugin: 'nebula-optional-base'
+    apply plugin: 'optional-base'
 
     repositories {
         mavenCentral()

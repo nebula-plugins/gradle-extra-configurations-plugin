@@ -122,9 +122,9 @@ dependencies {
     }
 
     def 'verify eclipse add provided'() {
-        buildFile << '''\
+        buildFile << '''
             apply plugin: 'java'
-            apply plugin: 'nebula.provided-base'
+            apply plugin: 'provided-base'
             apply plugin: 'eclipse'
 
             repositories { mavenCentral() }

@@ -16,6 +16,7 @@
 package nebula.plugin.extraconfigurations
 
 import nebula.test.IntegrationSpec
+import spock.lang.Ignore
 
 class ProvidedBasePluginIntegrationTest extends IntegrationSpec {
     def "Can compile production code dependent on dependency declared as provided"() {
@@ -244,5 +245,50 @@ publishing {
         commonsLang.@name.text() == 'commons-lang3'
         commonsLang.@rev.text() == '3.3.2'
         commonsLang.@conf.text() == 'provided'
+    }
+
+    @Ignore("Test case for issue: nebula-plugins#14")
+    def "Transitive dependencies in scope provided are not insluded in WAR archive"() {
+        when:
+        helper.addSubproject(
+                "shared-component",
+                """
+apply plugin: 'java'
+apply plugin: 'provided-base'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided 'org.apache.commons:commons-lang3:3.3.2'
+}
+"""
+        )
+
+        helper.addSubproject(
+                "webapp-component",
+                """
+apply plugin: 'war'
+apply plugin: 'provided-base'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(":shared-component")
+}
+
+task explodedWar(type: Copy) {
+    into "\$buildDir/libs/exploded"
+    with war
+}
+"""
+        )
+
+        runTasksSuccessfully('explodedWar')
+        then:
+        !new File(projectDir, 'webapp-component/build/libs/exploded/WEB-INF/lib/commons-lang3-3.3.2.jar').exists()
     }
 }

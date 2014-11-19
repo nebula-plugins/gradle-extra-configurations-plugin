@@ -247,7 +247,7 @@ publishing {
         commonsLang.@conf.text() == 'provided'
     }
 
-    @Ignore("Test case for issue: https://github.com/nebula-plugins/gradle-extra-configurations-plugin/issues/14")
+    @Ignore("https://github.com/nebula-plugins/gradle-extra-configurations-plugin/issues/14")
     def "Transitive dependencies in scope provided are not included in WAR archive"() {
         when:
         helper.addSubproject(

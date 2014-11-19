@@ -247,12 +247,12 @@ publishing {
         commonsLang.@conf.text() == 'provided'
     }
 
-    @Ignore("Test case for issue: nebula-plugins#14")
-    def "Transitive dependencies in scope provided are not insluded in WAR archive"() {
+    @Ignore("Test case for issue: https://github.com/nebula-plugins/gradle-extra-configurations-plugin/issues/14")
+    def "Transitive dependencies in scope provided are not included in WAR archive"() {
         when:
         helper.addSubproject(
                 "shared-component",
-                """
+"""
 apply plugin: 'java'
 apply plugin: 'provided-base'
 
@@ -268,7 +268,7 @@ dependencies {
 
         helper.addSubproject(
                 "webapp-component",
-                """
+"""
 apply plugin: 'war'
 apply plugin: 'provided-base'
 

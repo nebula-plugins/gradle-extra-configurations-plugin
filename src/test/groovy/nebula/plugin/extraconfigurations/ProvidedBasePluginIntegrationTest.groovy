@@ -16,7 +16,6 @@
 package nebula.plugin.extraconfigurations
 
 import nebula.test.IntegrationSpec
-import spock.lang.Ignore
 
 class ProvidedBasePluginIntegrationTest extends IntegrationSpec {
     def "Can compile production code dependent on dependency declared as provided"() {
@@ -247,8 +246,57 @@ publishing {
         commonsLang.@conf.text() == 'provided'
     }
 
-    @Ignore("https://github.com/nebula-plugins/gradle-extra-configurations-plugin/issues/14")
-    def "Transitive dependencies in scope provided are not included in WAR archive"() {
+    def "Provided dependencies are not included in war archive"() {
+        when:
+        buildFile << """
+apply plugin: 'war'
+apply plugin: 'provided-base'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided 'org.apache.commons:commons-lang3:3.3.2'
+}
+
+task explodedWar(type: Copy) {
+    into "\$buildDir/libs/exploded"
+    with war
+}
+"""
+        runTasksSuccessfully('explodedWar')
+
+        then:
+        !new File(projectDir, 'build/libs/exploded/WEB-INF/lib/commons-lang3-3.3.2.jar').exists()
+    }
+
+    def "Order of plugins declaration does not affect war content"() {
+        when:
+        buildFile << """
+apply plugin: 'provided-base'
+apply plugin: 'war'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided 'org.apache.commons:commons-lang3:3.3.2'
+}
+
+task explodedWar(type: Copy) {
+    into "\$buildDir/libs/exploded"
+    with war
+}
+"""
+        runTasksSuccessfully('explodedWar')
+
+        then:
+        !new File(projectDir, 'build/libs/exploded/WEB-INF/lib/commons-lang3-3.3.2.jar').exists()
+    }
+
+    def "Transitive dependencies in scope provided are not included in war archive"() {
         when:
         helper.addSubproject(
                 "shared-component",
@@ -288,6 +336,7 @@ task explodedWar(type: Copy) {
         )
 
         runTasksSuccessfully('explodedWar')
+
         then:
         !new File(projectDir, 'webapp-component/build/libs/exploded/WEB-INF/lib/commons-lang3-3.3.2.jar').exists()
     }

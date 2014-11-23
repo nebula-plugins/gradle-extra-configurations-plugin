@@ -21,9 +21,14 @@ import nebula.plugin.extraconfigurations.publication.PublishingConfigurer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.bundling.War
 import org.gradle.plugins.ide.eclipse.EclipsePlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
 
@@ -38,6 +43,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
             configureEclipsePlugin(project, providedConfiguration)
             configureMavenPublishPlugin(project, providedConfiguration)
             configureIvyPublishPlugin(project, providedConfiguration)
+            configureWarPlugin(project, providedConfiguration)
         }
     }
 
@@ -51,6 +57,12 @@ class ProvidedBasePlugin implements Plugin<Project> {
                 .setDescription('much like compile, but indicates that you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.')
 
         compileConf.extendsFrom(providedConf)
+
+        // exclude provided dependencies when resolving dependencies between projects
+        providedConf.allDependencies.all { Dependency dep ->
+            project.configurations.default.exclude(group: dep.group, module: dep.name)
+        }
+
         providedConf
     }
 
@@ -129,6 +141,23 @@ class ProvidedBasePlugin implements Plugin<Project> {
                 }.each { runtimeDep ->
                     runtimeDep.@conf = PROVIDED_CONFIGURATION_NAME
                 }
+            }
+        }
+    }
+
+    /**
+     * Configures War plugin to ensure that provided dependencies are excluded from runtime classpath.
+     *
+     * @param project Project
+     * @param providedConfiguration Provided configuration
+     */
+    private void configureWarPlugin(Project project, Configuration providedConfiguration) {
+        project.afterEvaluate {
+            FileCollection runtimeClasspath = project.getConvention().getPlugin(JavaPluginConvention.class)
+                    .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath();
+
+            project.getTasks().withType(War.class).all { War war ->
+                war.classpath = runtimeClasspath.minus(providedConfiguration)
             }
         }
     }

@@ -25,6 +25,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.WarPlugin
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.SourceSet
@@ -152,12 +153,12 @@ class ProvidedBasePlugin implements Plugin<Project> {
      * @param providedConfiguration Provided configuration
      */
     private void configureWarPlugin(Project project, Configuration providedConfiguration) {
-        project.afterEvaluate {
-            FileCollection runtimeClasspath = project.getConvention().getPlugin(JavaPluginConvention.class)
-                    .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath();
+        project.plugins.withType(WarPlugin) {
+            FileCollection runtimeClasspath = project.convention.getPlugin(JavaPluginConvention)
+                    .sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).runtimeClasspath
 
-            project.getTasks().withType(War.class).all { War war ->
-                war.classpath = runtimeClasspath.minus(providedConfiguration)
+            project.tasks.withType(War) {
+                classpath = runtimeClasspath.minus(providedConfiguration)
             }
         }
     }

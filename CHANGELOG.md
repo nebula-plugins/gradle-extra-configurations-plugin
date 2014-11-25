@@ -1,3 +1,13 @@
+2.0.1 / 2014-11-25
+===================
+
+* Issue #14: Transitive provided dependencies end up inside war archive.
+
+2.0.0 / 2014-09-19
+===================
+
+* Built with Gradle 2.0.
+
 1.12.2 / 2014-08-11
 ===================
 

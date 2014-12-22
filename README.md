@@ -13,7 +13,7 @@ The following publishing plugins support the correct handling when generating th
 
 The extra configurations plugin also configures the following IDE plugins when generating the project files: 
 
-* [Idea plugin](http://www.gradle.org/docs/current/userguide/idea_plugin.html)
+* [Idea](http://www.gradle.org/docs/current/userguide/idea_plugin.html)
 * [Eclipse](http://gradle.org/docs/current/userguide/eclipse_plugin.html)
 
 ## Usage

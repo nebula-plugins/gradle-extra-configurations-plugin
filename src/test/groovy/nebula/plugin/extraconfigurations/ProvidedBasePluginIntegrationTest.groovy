@@ -194,6 +194,49 @@ publishing {
         commonsLang.scope.text() == 'provided'
     }
 
+  def "Publishing provided dependencies to a Maven repository preserves the scope when using maven plugin"() {
+    given:
+    File repoUrl = new File(projectDir, 'build/repo/')
+
+    when:
+    buildFile << """
+apply plugin: 'java'
+apply plugin: 'provided-base'
+apply plugin: 'maven'
+
+group = 'nebula.extraconf'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided 'org.apache.commons:commons-lang3:3.3.2'
+}
+
+uploadArchives {
+  repositories.mavenDeployer {
+     repository(url: "file://$repoUrl.absolutePath")
+  }
+}
+"""
+    runTasksSuccessfully('uploadArchives')
+
+    then:
+    File pomFile = new File(repoUrl, "nebula/extraconf/$moduleName/1.0/$moduleName-1.0.pom")
+    pomFile.exists()
+    def pomXml = new XmlSlurper().parseText(pomFile.text)
+    def dependencies = pomXml.dependencies
+    dependencies.size() == 1
+    def commonsLang = dependencies.dependency[0]
+    commonsLang.groupId.text() == 'org.apache.commons'
+    commonsLang.artifactId.text() == 'commons-lang3'
+    commonsLang.version.text() == '3.3.2'
+    commonsLang.scope.text() == 'provided'
+  }
+
+
     def "Publishing provided dependencies to an Ivy repository preserves the scope"() {
         given:
         File repoUrl = new File(projectDir, 'build/repo')

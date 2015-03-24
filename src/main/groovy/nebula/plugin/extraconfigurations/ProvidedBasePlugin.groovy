@@ -22,9 +22,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
 import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.MavenPlugin
 import org.gradle.api.plugins.WarPlugin
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.maven.MavenPublication
@@ -45,6 +47,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
             configureMavenPublishPlugin(project, providedConfiguration)
             configureIvyPublishPlugin(project, providedConfiguration)
             configureWarPlugin(project, providedConfiguration)
+            configureMavenPlugin(project, providedConfiguration)
         }
     }
 
@@ -160,6 +163,19 @@ class ProvidedBasePlugin implements Plugin<Project> {
             project.tasks.withType(War) {
                 classpath = runtimeClasspath.minus(providedConfiguration)
             }
+        }
+    }
+
+    /**
+     * Configures the Maven plugin, so that provided dependencies are listed in the pom when using 'gradle install'.
+     *
+     * @param project Project
+     * @param providedConfiguration provided configuration
+     */
+    private void configureMavenPlugin(Project project, Configuration providedConfiguration) {
+        project.plugins.withType(MavenPlugin){
+            project.conf2ScopeMappings.addMapping(MavenPlugin.COMPILE_PRIORITY + 1,
+                    project.configurations.getByName(PROVIDED_CONFIGURATION_NAME), Conf2ScopeMappingContainer.PROVIDED)
         }
     }
 }

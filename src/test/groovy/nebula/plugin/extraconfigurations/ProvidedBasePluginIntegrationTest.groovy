@@ -144,7 +144,7 @@ dependencies {
         classpathXml.classpath.classpathentry.find { it?.@path?.contains 'org.apache.commons/commons-lang3/3.3.2' } != null
     }
 
-    def "Publishing provided dependencies to a Maven repository preserves the scope"() {
+    def "Publishing provided dependencies to a Maven repository preserves the scope when using Maven Publish plugin"() {
         given:
         File repoUrl = new File(projectDir, 'build/repo')
 
@@ -194,7 +194,7 @@ publishing {
         commonsLang.scope.text() == 'provided'
     }
 
-  def "Publishing provided dependencies to a Maven repository preserves the scope when using maven plugin"() {
+  def "Publishing provided dependencies to a Maven repository preserves the scope when using Maven plugin"() {
     given:
     File repoUrl = new File(projectDir, 'build/repo/')
 

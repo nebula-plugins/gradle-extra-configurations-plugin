@@ -8,6 +8,7 @@ This plugin allows dependencies to be declared with a configuration or attribute
 
 The following publishing plugins support the correct handling when generating the relevant metadata:
 
+* [Maven](http://gradle.org/docs/current/userguide/maven_plugin.html)
 * [Maven Publishing](http://www.gradle.org/docs/current/userguide/publishing_maven.html)
 * [Ivy Publishing](http://www.gradle.org/docs/current/userguide/publishing_ivy.html)
 
@@ -21,7 +22,7 @@ To include, add the following to your build.gradle
         repositories { jcenter() }
 
         dependencies {
-            classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:1.12.+'
+            classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:2.2.+'
         }
     }
 

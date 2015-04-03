@@ -167,15 +167,15 @@ class ProvidedBasePlugin implements Plugin<Project> {
     }
 
     /**
-     * Configures the Maven plugin, so that provided dependencies are listed in the pom when using 'gradle install'.
+     * Configures the Maven plugin to ensure that published dependencies receive the correct scope.
      *
      * @param project Project
      * @param providedConfiguration provided configuration
      */
     private void configureMavenPlugin(Project project, Configuration providedConfiguration) {
-        project.plugins.withType(MavenPlugin){
-            project.conf2ScopeMappings.addMapping(MavenPlugin.COMPILE_PRIORITY + 1,
-                    project.configurations.getByName(PROVIDED_CONFIGURATION_NAME), Conf2ScopeMappingContainer.PROVIDED)
+        project.plugins.withType(MavenPlugin) {
+            project.conf2ScopeMappings.addMapping(MavenPlugin.COMPILE_PRIORITY + 1, providedConfiguration,
+                                                  Conf2ScopeMappingContainer.PROVIDED)
         }
     }
 }

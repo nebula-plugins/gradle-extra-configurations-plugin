@@ -15,12 +15,18 @@
  */
 package nebula.plugin.extraconfigurations
 
-import nebula.test.IntegrationSpec
 import nebula.test.dependencies.DependencyGraph
 import nebula.test.dependencies.GradleDependencyGenerator
 import nebula.test.functional.ExecutionResult
 
-class OptionalBasePluginIntegrationTest extends IntegrationSpec {
+class OptionalBasePluginIntegrationTest extends AbstractIntegrationTest {
+    def setup() {
+        buildFile << """
+apply plugin: 'java'
+apply plugin: 'optional-base'
+"""
+    }
+
     def "Can use optional"() {
         given:
         File baseDir = new File(projectDir, 'build')
@@ -30,9 +36,6 @@ class OptionalBasePluginIntegrationTest extends IntegrationSpec {
 
         when:
         buildFile << """
-apply plugin: 'java'
-apply plugin: 'optional-base'
-
 repositories {
     maven { url '$mavenRepoDir.canonicalPath' }
 }
@@ -76,9 +79,6 @@ testRuntime - Runtime classpath for source set 'test'.
 
         when:
         buildFile << """
-apply plugin: 'java'
-apply plugin: 'optional-base'
-
 ext.excludeOptional = { dep ->
     exclude module: 'baz'
     optional(dep)
@@ -114,18 +114,16 @@ testRuntime - Runtime classpath for source set 'test'.
         !result.standardOutput.contains('custom:baz:5.1.27')
     }
 
-    def "Publishing provided dependencies to a Maven repository preserves the scope"() {
+    def "Publishing provided dependencies to a Maven repository preserves the scope when using Maven Publish plugin"() {
         given:
         File repoUrl = new File(projectDir, 'build/repo')
 
         when:
         buildFile << """
-apply plugin: 'java'
-apply plugin: 'optional-base'
 apply plugin: 'maven-publish'
 
-group = 'nebula.extraconf'
-version '1.0'
+group = '$GROUP_ID'
+version '$VERSION'
 
 repositories {
     mavenCentral()
@@ -152,17 +150,41 @@ publishing {
         runTasksSuccessfully('publish')
 
         then:
-        File pomFile = new File(repoUrl, "nebula/extraconf/$moduleName/1.0/$moduleName-1.0.pom")
-        pomFile.exists()
-        def pomXml = new XmlSlurper().parseText(pomFile.text)
-        def dependencies = pomXml.dependencies
-        dependencies.size() == 1
-        def commonsLang = dependencies.dependency[0]
-        commonsLang.groupId.text() == 'org.apache.commons'
-        commonsLang.artifactId.text() == 'commons-lang3'
-        commonsLang.version.text() == '3.3.2'
-        commonsLang.scope.text() == 'runtime'
-        commonsLang.optional.text() == 'true'
+        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'runtime')
+    }
+
+    def "Publishing provided dependencies to a Maven repository preserves the scope when using Maven plugin"() {
+        given:
+        File repoUrl = new File(projectDir, 'build/repo')
+
+        when:
+        buildFile << """
+apply plugin: 'maven'
+
+group = '$GROUP_ID'
+version '$VERSION'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.commons:commons-lang3:3.3.2', optional
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: 'file://$repoUrl.canonicalPath')
+        }
+    }
+}
+"""
+        runTasksSuccessfully('install', 'uploadArchives')
+
+        then:
+        assertOptionalDependencyInGeneratedPom(MAVEN_LOCAL_DIR, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
+        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
     }
 
     def "Publishing optional dependencies to an Ivy repository preserves the scope"() {
@@ -171,12 +193,10 @@ publishing {
 
         when:
         buildFile << """
-apply plugin: 'java'
-apply plugin: 'optional-base'
 apply plugin: 'ivy-publish'
 
-group = 'nebula.extraconf'
-version '1.0'
+group = '$GROUP_ID'
+version '$VERSION'
 
 repositories {
     mavenCentral()
@@ -203,16 +223,6 @@ publishing {
         runTasksSuccessfully('publish')
 
         then:
-        true
-        File ivyFile = new File(repoUrl, "nebula.extraconf/$moduleName/1.0/ivy-1.0.xml")
-        ivyFile.exists()
-        def ivyXml = new XmlSlurper().parseText(ivyFile.text)
-        def dependencies = ivyXml.dependencies
-        dependencies.size() == 1
-        def commonsLang = dependencies.dependency[0]
-        commonsLang.@org.text() == 'org.apache.commons'
-        commonsLang.@name.text() == 'commons-lang3'
-        commonsLang.@rev.text() == '3.3.2'
-        commonsLang.@conf.text() == 'optional'
+        assertOptionalDependencyInGeneratedIvy(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2')
     }
 }

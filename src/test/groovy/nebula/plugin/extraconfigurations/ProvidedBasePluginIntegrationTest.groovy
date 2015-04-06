@@ -15,15 +15,17 @@
  */
 package nebula.plugin.extraconfigurations
 
-import nebula.test.IntegrationSpec
-
-class ProvidedBasePluginIntegrationTest extends IntegrationSpec {
-    def "Can compile production code dependent on dependency declared as provided"() {
-        when:
+class ProvidedBasePluginIntegrationTest extends AbstractIntegrationTest {
+    def setup() {
         buildFile << """
 apply plugin: 'java'
 apply plugin: 'provided-base'
+"""
+    }
 
+    def "Can compile production code dependent on dependency declared as provided"() {
+        when:
+        buildFile << """
 repositories {
     mavenCentral()
 }
@@ -42,9 +44,6 @@ dependencies {
     def "Can test production code dependent on dependency declared as provided"() {
         when:
         buildFile << """
-apply plugin: 'java'
-apply plugin: 'provided-base'
-
 repositories {
     mavenCentral()
 }
@@ -99,8 +98,6 @@ public class HelloWorldTest {
     def "Adds provided dependencies to PROVIDED scope if Idea plugin is applied"() {
         when:
         buildFile << """
-apply plugin: 'java'
-apply plugin: 'provided-base'
 apply plugin: 'idea'
 
 repositories {
@@ -123,8 +120,6 @@ dependencies {
 
     def 'verify eclipse add provided'() {
         buildFile << '''
-            apply plugin: 'java'
-            apply plugin: 'provided-base'
             apply plugin: 'eclipse'
 
             repositories { mavenCentral() }
@@ -150,12 +145,10 @@ dependencies {
 
         when:
         buildFile << """
-apply plugin: 'java'
-apply plugin: 'provided-base'
 apply plugin: 'maven-publish'
 
-group = 'nebula.extraconf'
-version '1.0'
+group = '$GROUP_ID'
+version '$VERSION'
 
 repositories {
     mavenCentral()
@@ -182,16 +175,7 @@ publishing {
         runTasksSuccessfully('publish')
 
         then:
-        File pomFile = new File(repoUrl, "nebula/extraconf/$moduleName/1.0/$moduleName-1.0.pom")
-        pomFile.exists()
-        def pomXml = new XmlSlurper().parseText(pomFile.text)
-        def dependencies = pomXml.dependencies
-        dependencies.size() == 1
-        def commonsLang = dependencies.dependency[0]
-        commonsLang.groupId.text() == 'org.apache.commons'
-        commonsLang.artifactId.text() == 'commons-lang3'
-        commonsLang.version.text() == '3.3.2'
-        commonsLang.scope.text() == 'provided'
+        assertProvidedDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2')
     }
 
   def "Publishing provided dependencies to a Maven repository preserves the scope when using Maven plugin"() {
@@ -200,12 +184,10 @@ publishing {
 
     when:
     buildFile << """
-apply plugin: 'java'
-apply plugin: 'provided-base'
 apply plugin: 'maven'
 
-group = 'nebula.extraconf'
-version '1.0'
+group = '$GROUP_ID'
+version '$VERSION'
 
 repositories {
     mavenCentral()
@@ -216,26 +198,17 @@ dependencies {
 }
 
 uploadArchives {
-  repositories.mavenDeployer {
-     repository(url: "file://$repoUrl.absolutePath")
-  }
+    repositories.mavenDeployer {
+        repository(url: "file://$repoUrl.absolutePath")
+    }
 }
 """
-    runTasksSuccessfully('uploadArchives')
+        runTasksSuccessfully('install', 'uploadArchives')
 
-    then:
-    File pomFile = new File(repoUrl, "nebula/extraconf/$moduleName/1.0/$moduleName-1.0.pom")
-    pomFile.exists()
-    def pomXml = new XmlSlurper().parseText(pomFile.text)
-    def dependencies = pomXml.dependencies
-    dependencies.size() == 1
-    def commonsLang = dependencies.dependency[0]
-    commonsLang.groupId.text() == 'org.apache.commons'
-    commonsLang.artifactId.text() == 'commons-lang3'
-    commonsLang.version.text() == '3.3.2'
-    commonsLang.scope.text() == 'provided'
-  }
-
+        then:
+        assertProvidedDependencyInGeneratedPom(MAVEN_LOCAL_DIR, 'org.apache.commons', 'commons-lang3', '3.3.2')
+        assertProvidedDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2')
+    }
 
     def "Publishing provided dependencies to an Ivy repository preserves the scope"() {
         given:
@@ -243,12 +216,10 @@ uploadArchives {
 
         when:
         buildFile << """
-apply plugin: 'java'
-apply plugin: 'provided-base'
 apply plugin: 'ivy-publish'
 
-group = 'nebula.extraconf'
-version '1.0'
+group = '$GROUP_ID'
+version '$VERSION'
 
 repositories {
     mavenCentral()
@@ -276,17 +247,7 @@ publishing {
         runTasksSuccessfully('publish')
 
         then:
-        true
-        File ivyFile = new File(repoUrl, "nebula.extraconf/$moduleName/1.0/ivy-1.0.xml")
-        ivyFile.exists()
-        def ivyXml = new XmlSlurper().parseText(ivyFile.text)
-        def dependencies = ivyXml.dependencies
-        dependencies.size() == 1
-        def commonsLang = dependencies.dependency[1]
-        commonsLang.@org.text() == 'org.apache.commons'
-        commonsLang.@name.text() == 'commons-lang3'
-        commonsLang.@rev.text() == '3.3.2'
-        commonsLang.@conf.text() == 'provided'
+        assertProvidedDependencyInGeneratedIvy(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2')
     }
 
     def "Provided dependencies are not included in war archive"() {
@@ -317,7 +278,6 @@ task explodedWar(type: Copy) {
     def "Order of plugins declaration does not affect war content"() {
         when:
         buildFile << """
-apply plugin: 'provided-base'
 apply plugin: 'war'
 
 repositories {

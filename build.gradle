@@ -23,7 +23,7 @@ apply plugin: 'nebula-plugin'
 apply plugin: 'idea'
 
 dependencies {
-    testCompile('com.netflix.nebula:nebula-test:2.2.+') {
+    testCompile('com.netflix.nebula:nebula-test:2.4.+') {
         exclude group: 'org.codehaus.groovy'
     }
 }

@@ -21,6 +21,8 @@ import org.gradle.api.artifacts.ResolvedConfiguration
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.bundling.War
+import spock.lang.Unroll
 
 class ProvidedBasePluginSpec extends PluginProjectSpec {
     @Override
@@ -94,5 +96,29 @@ class ProvidedBasePluginSpec extends PluginProjectSpec {
         SourceSet testSourceSet = javaConvention.sourceSets.test
         testSourceSet.compileClasspath.any { it.name.contains 'guava'}
         testSourceSet.compileClasspath.any { it.name.contains 'commons-io'}
+    }
+
+    @Unroll
+    def "Dependency declared by configuration '#providedConfigurationName' is not added to War classpath if also defined by 'compile' configuration"() {
+        when:
+        project.apply plugin: 'war'
+        project.apply plugin: pluginName
+        project.repositories.mavenCentral()
+        project.dependencies.add('compile', 'commons-io:commons-io:2.2')
+        project.dependencies.add(providedConfigurationName, 'commons-io:commons-io:2.4')
+
+        then:
+        def resolved = project.configurations.getByName('compile').resolvedConfiguration
+        resolved.getResolvedArtifacts().any { it.name == 'commons-io' && it.moduleVersion.id.version == '2.4' } // This is different from above
+
+        def resolvedProvided = project.configurations.getByName(providedConfigurationName).resolvedConfiguration
+        resolvedProvided.getResolvedArtifacts().any { it.name == 'commons-io' && it.moduleVersion.id.version == '2.4' }
+
+        War warTask = project.tasks.getByName('war')
+        def commonIos = warTask.classpath.findAll { it.name.contains 'commons-io' }
+        commonIos.size() == 0
+
+        where:
+        providedConfigurationName << ['providedCompile', 'provided']
     }
 }

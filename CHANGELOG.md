@@ -1,3 +1,9 @@
+2.2.2 / 2015-5-18
+===================
+
+* Make sure Java runtime libraries don't sneak into War classpath. We only want to subtract dependencies added to `provided`
+ configuration.
+
 2.2.1 / 2015-4-6
 ===================
 

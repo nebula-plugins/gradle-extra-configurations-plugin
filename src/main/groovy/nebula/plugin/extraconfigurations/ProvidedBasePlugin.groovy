@@ -23,14 +23,11 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
-import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.plugins.MavenPlugin
 import org.gradle.api.plugins.WarPlugin
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.War
 import org.gradle.plugins.ide.eclipse.EclipsePlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
@@ -157,11 +154,8 @@ class ProvidedBasePlugin implements Plugin<Project> {
      */
     private void configureWarPlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(WarPlugin) {
-            FileCollection runtimeClasspath = project.convention.getPlugin(JavaPluginConvention)
-                    .sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).runtimeClasspath
-
             project.tasks.withType(War) {
-                classpath = runtimeClasspath.minus(providedConfiguration)
+                classpath = classpath.minus(providedConfiguration)
             }
         }
     }

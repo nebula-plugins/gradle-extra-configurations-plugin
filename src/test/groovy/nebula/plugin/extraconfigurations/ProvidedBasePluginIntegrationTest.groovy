@@ -332,8 +332,9 @@ dependencies {
 }
 
 task explodedWar(type: Copy) {
+    dependsOn war
+    from zipTree(war.archivePath)
     into "\$buildDir/libs/exploded"
-    with war
 }
 """
         )
@@ -342,5 +343,56 @@ task explodedWar(type: Copy) {
 
         then:
         !new File(projectDir, 'webapp-component/build/libs/exploded/WEB-INF/lib/commons-lang3-3.3.2.jar').exists()
+    }
+
+    def "Dependencies assigned to provided configuration are not added to default configuration"() {
+        when:
+        helper.addSubproject(
+                "shared-component",
+                """
+apply plugin: 'java'
+apply plugin: 'provided-base'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'commons-codec:commons-codec:1.10'
+    provided 'org.apache.commons:commons-lang3:3.3.2'
+}
+"""
+        )
+
+        helper.addSubproject(
+                "other-component",
+                """
+apply plugin: 'java'
+apply plugin: 'provided-base'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(":shared-component")
+}
+
+task copyDefaultConfigurationLibs(type: Copy) {
+    from configurations.default
+    into "\$buildDir/libs"
+}
+"""
+        )
+
+        runTasksSuccessfully('other-component:copyDefaultConfigurationLibs')
+
+        then:
+        true
+        File libsDir = new File(projectDir, 'other-component/build/libs')
+        libsDir.exists()
+        new File(libsDir, 'shared-component.jar').exists()
+        new File(libsDir, 'commons-codec-1.10.jar').exists()
+        !new File(libsDir, 'commons-lang3-3.3.2.jar').exists()
     }
 }

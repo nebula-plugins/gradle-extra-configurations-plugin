@@ -25,7 +25,7 @@ import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.maven.MavenPublication
 
 class OptionalBasePlugin implements Plugin<Project> {
-    static final String OPTIONAL_IDENTIFIER = 'optional'
+    public static final String OPTIONAL_IDENTIFIER = 'optional'
 
     @Override
     void apply(Project project) {

@@ -52,7 +52,7 @@ class ProvidedBasePluginSpec extends PluginProjectSpec {
         and: 'Provided configuration exists and does not extend other configurations'
         Configuration providedConfiguration = project.configurations.getByName(ProvidedBasePlugin.PROVIDED_CONFIGURATION_NAME)
         providedConfiguration.extendsFrom == Collections.emptySet()
-        providedConfiguration.visible
+        !providedConfiguration.visible
         providedConfiguration.transitive
     }
 

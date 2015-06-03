@@ -33,7 +33,7 @@ import org.gradle.plugins.ide.eclipse.EclipsePlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
 
 class ProvidedBasePlugin implements Plugin<Project> {
-    static final String PROVIDED_CONFIGURATION_NAME = 'provided'
+    public static final String PROVIDED_CONFIGURATION_NAME = 'provided'
 
     @Override
     void apply(Project project) {
@@ -49,15 +49,12 @@ class ProvidedBasePlugin implements Plugin<Project> {
     }
 
     private Configuration createProvidedConfiguration(Project project) {
-        Configuration compileConf = project.configurations.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME)
-
         // Our legacy provided scope, uber conf of provided and compile. This ensures what we're at least resolving with compile dependencies.
         def providedConf = project.configurations.create(PROVIDED_CONFIGURATION_NAME)
-                .setVisible(true)
-                .setTransitive(true)
+                .setVisible(false)
                 .setDescription('much like compile, but indicates that you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.')
 
-        compileConf.extendsFrom(providedConf)
+        project.configurations.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME).extendsFrom(providedConf)
 
         // exclude provided dependencies when resolving dependencies between projects
         providedConf.allDependencies.all { Dependency dep ->

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2014-2015 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-buildscript {
-    repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:2.0.+' }
+
+plugins {
+    id 'groovy'
+    id 'idea'
+    id 'jacoco'
+    id 'nebula.info' version '2.2.4'
+    id 'nebula.contacts' version '2.2.0'
+    id 'nebula.maven-publishing' version '3.0.2'
+    id 'nebula.nebula-release' version '2.2.7'
+    id 'nebula.nebula-bintray' version '3.0.1'
+    id 'com.gradle.plugin-publish' version '0.9.1'
+    id 'nebula.javadoc-jar' version '3.0.2'
+    id 'nebula.source-jar' version '3.0.2'
+    id 'nebula.apache-license-pom' version '3.0.2'
+    id 'com.github.kt3k.coveralls' version '2.4.0'
 }
+
+apply from: 'https://raw.githubusercontent.com/nebula-plugins/nebula-core/1a495ccc109b1d226e7a8d4b3474eab0ac78abb2/common.gradle'
 
 description 'Plugins to add provided and optional configurations'
-apply plugin: 'nebula-plugin'
-apply plugin: 'idea'
-
-dependencies {
-    testCompile('com.netflix.nebula:nebula-test:2.2.+') {
-        exclude group: 'org.codehaus.groovy'
-    }
-}
 
 contacts {
     'rob.spieldenner@gmail.com' {
         moniker 'Rob Spieldenner'
         github 'rspieldenner'
+    }
+}
+
+pluginBundle {
+    plugins {
+        optional {
+            id = 'optional-base'
+            displayName = 'Optional Configurations plugin'
+            description = project.description
+            tags = ['nebula', 'configuration', 'configurations', 'optional']
+        }
+        provided {
+            id = 'provided-base'
+            displayName = 'Provided Configurations plugin'
+            description = project.description
+            tags = ['nebula', 'configuration', 'configurations', 'provided']
+        }
     }
 }

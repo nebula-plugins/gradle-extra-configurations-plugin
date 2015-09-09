@@ -27,7 +27,7 @@ import spock.lang.Unroll
 class ProvidedBasePluginSpec extends PluginProjectSpec {
     @Override
     String getPluginName() {
-        'provided-base'
+        'nebula.provided-base'
     }
 
     def "Does not create provided configuration if Java plugin is not applied"() {

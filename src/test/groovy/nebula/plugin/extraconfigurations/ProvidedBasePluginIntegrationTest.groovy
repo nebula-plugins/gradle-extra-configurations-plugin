@@ -19,7 +19,7 @@ class ProvidedBasePluginIntegrationTest extends AbstractIntegrationTest {
     def setup() {
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'provided-base'
+apply plugin: 'nebula.provided-base'
 """
     }
 
@@ -254,7 +254,7 @@ publishing {
         when:
         buildFile << """
 apply plugin: 'war'
-apply plugin: 'provided-base'
+apply plugin: 'nebula.provided-base'
 
 repositories {
     mavenCentral()
@@ -305,7 +305,7 @@ task explodedWar(type: Copy) {
                 "shared-component",
 """
 apply plugin: 'java'
-apply plugin: 'provided-base'
+apply plugin: 'nebula.provided-base'
 
 repositories {
     mavenCentral()
@@ -321,7 +321,7 @@ dependencies {
                 "webapp-component",
 """
 apply plugin: 'war'
-apply plugin: 'provided-base'
+apply plugin: 'nebula.provided-base'
 
 repositories {
     mavenCentral()

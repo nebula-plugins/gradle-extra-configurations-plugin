@@ -57,11 +57,11 @@ The JAR file comes with two plugins:
 
 To use the Provided plugin, include the following code snippet in your build script:
 
-    apply plugin: 'provided-base'
+    apply plugin: 'nebula.provided-base'
 
 To use the Optional plugin, include the following code snippet in your build script:
 
-    apply plugin: 'optional-base'
+    apply plugin: 'nebula.optional-base'
 
 ### Using the provided plugin
 
@@ -107,7 +107,7 @@ When publishing a provided dependency to an Ivy repository the declaration in th
 #### Usage example
 
     apply plugin: 'java'
-    apply plugin: 'provided-base'
+    apply plugin: 'nebula.provided-base'
 
     repositories {
         mavenCentral()
@@ -158,7 +158,7 @@ When publishing a optional dependency to an Ivy repository the declaration in th
 #### Usage example
 
     apply plugin: 'java'
-    apply plugin: 'optional-base'
+    apply plugin: 'nebula.optional-base'
 
     repositories {
         mavenCentral()

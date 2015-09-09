@@ -23,7 +23,7 @@ class OptionalBasePluginIntegrationTest extends AbstractIntegrationTest {
     def setup() {
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'optional-base'
+apply plugin: 'nebula.optional-base'
 """
     }
 

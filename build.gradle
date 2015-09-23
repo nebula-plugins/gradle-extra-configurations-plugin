@@ -45,13 +45,13 @@ contacts {
 
 pluginBundle {
     plugins {
-        optional {
+        optionalPlugin {
             id = 'nebula.optional-base'
             displayName = 'Optional Configurations plugin'
             description = project.description
             tags = ['nebula', 'configuration', 'configurations', 'optional']
         }
-        provided {
+        providedPlugin {
             id = 'nebula.provided-base'
             displayName = 'Provided Configurations plugin'
             description = project.description

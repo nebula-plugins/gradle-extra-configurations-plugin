@@ -15,6 +15,9 @@
  */
 package nebula.plugin.extraconfigurations
 
+import nebula.test.dependencies.DependencyGraphBuilder
+import nebula.test.dependencies.GradleDependencyGenerator
+
 class ProvidedBasePluginIntegrationTest extends AbstractIntegrationTest {
     def setup() {
         buildFile << """
@@ -342,5 +345,47 @@ task explodedWar(type: Copy) {
 
         then:
         !new File(projectDir, 'webapp-component/build/libs/exploded/WEB-INF/lib/commons-lang3-3.3.2.jar').exists()
+    }
+
+    def 'still works if maven-publish publication is modified in after evaluate'() {
+        given:
+        def graph = new DependencyGraphBuilder().addModule('test.nebula:foo:1.0.0').build()
+        File mavenRepo = new GradleDependencyGenerator(graph, "${projectDir}/testrepogen").generateTestMavenRepo()
+        File repoUrl = new File(projectDir, 'build/repo')
+
+        buildFile << """\
+            apply plugin: 'maven-publish'
+
+            group = '$GROUP_ID'
+            version = '$VERSION'
+
+            repositories { maven { url '${mavenRepo.absolutePath}' } }
+
+            dependencies {
+                provided 'test.nebula:foo:1.0.0'
+            }
+
+            afterEvaluate {
+                publishing {
+                    repositories {
+                        maven {
+                            name 'testRepo'
+                            url '${repoUrl.canonicalPath}'
+                        }
+                    }
+                    publications {
+                        testMaven(MavenPublication) {
+                            from components.java
+                        }
+                    }
+                }
+            }
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully('publish')
+
+        then:
+        assertProvidedDependencyInGeneratedPom(repoUrl, 'test.nebula', 'foo', '1.0.0')
     }
 }

@@ -1,3 +1,18 @@
+3.0.2 / 2015-10-08
+==================
+
+* Bug fix to not break interaction with nebula-publishing-plugin post 3.x
+
+3.0.1 / 2015-09-15
+==================
+
+* Retry publishing
+
+3.0.0 / 2015-09-15
+==================
+
+* Move to gradle 2.7, update build stuff
+
 2.2.2 / 2015-5-18
 ===================
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2014-2015 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 package nebula.plugin.extraconfigurations
-
 import nebula.test.dependencies.DependencyGraph
+import nebula.test.dependencies.DependencyGraphBuilder
 import nebula.test.dependencies.GradleDependencyGenerator
 import nebula.test.functional.ExecutionResult
 
@@ -224,5 +224,47 @@ publishing {
 
         then:
         assertOptionalDependencyInGeneratedIvy(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2')
+    }
+
+    def 'still works if maven-publish publication is modified in after evaluate'() {
+        given:
+        def graph = new DependencyGraphBuilder().addModule('test.nebula:foo:1.0.0').build()
+        File mavenRepo = new GradleDependencyGenerator(graph, "${projectDir}/testrepogen").generateTestMavenRepo()
+        File repoUrl = new File(projectDir, 'build/repo')
+
+        buildFile << """\
+            apply plugin: 'maven-publish'
+
+            group = '$GROUP_ID'
+            version = '$VERSION'
+
+            repositories { maven { url '${mavenRepo.absolutePath}' } }
+
+            dependencies {
+                compile 'test.nebula:foo:1.0.0', optional
+            }
+
+            afterEvaluate {
+                publishing {
+                    repositories {
+                        maven {
+                            name 'testRepo'
+                            url '${repoUrl.canonicalPath}'
+                        }
+                    }
+                    publications {
+                        testMaven(MavenPublication) {
+                            from components.java
+                        }
+                    }
+                }
+            }
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully('publish')
+
+        then:
+        assertOptionalDependencyInGeneratedPom(repoUrl, 'test.nebula', 'foo', '1.0.0', 'runtime')
     }
 }

@@ -1,7 +1,12 @@
-3.0.2 / 2015-10-08
+3.0.3 / 2015-10-08
 ==================
 
 * Bug fix to not break interaction with nebula-publishing-plugin post 3.x
+
+3.0.2 / 2015-09-22
+==================
+
+* Fix publishing bundle
 
 3.0.1 / 2015-09-15
 ==================

@@ -114,10 +114,10 @@ class OptionalBasePlugin implements Plugin<Project> {
         project.plugins.withType(MavenPlugin) {
             // Requires user definition of Maven installer/deployer which could be anywhere in the build script
             project.afterEvaluate {
-                def installer = project.tasks.install.repositories.mavenInstaller
-                def deployer = project.tasks.uploadArchives.repositories.mavenDeployer
+                def installers = project.tasks.install.repositories
+                def deployers = project.tasks.uploadArchives.repositories
 
-                [installer, deployer]*.pom*.whenConfigured { pom ->
+                installers.plus(deployers)*.pom*.whenConfigured { pom ->
                     project.ext.optionalDeps.each { optionalDep ->
                         pom.dependencies.find {
                             dep -> dep.groupId == optionalDep.group && dep.artifactId == optionalDep.name

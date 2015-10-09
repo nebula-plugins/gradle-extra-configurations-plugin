@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2014-2015 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 package nebula.plugin.extraconfigurations.publication
-
 import org.gradle.api.Project
-import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.plugins.PublishingPlugin
 
 abstract class AbstractPublishingConfigurer implements PublishingConfigurer {
@@ -31,8 +29,9 @@ abstract class AbstractPublishingConfigurer implements PublishingConfigurer {
         Closure addArtifactClosure = {
             // Wait for our plugin to be applied.
             project.plugins.withType(PublishingPlugin) { PublishingPlugin publishingPlugin ->
-                PublishingExtension publishingExtension = project.extensions.getByType(PublishingExtension)
-                publishingExtension.publications.withType(publicationType, closure)
+                project.publishing {
+                    publications.withType(publicationType, closure)
+                }
             }
         }
 

@@ -32,7 +32,7 @@ plugins {
     id 'com.github.kt3k.coveralls' version '2.4.0'
 }
 
-apply from: 'https://raw.githubusercontent.com/nebula-plugins/nebula-core/596569bf3e7bd32da076784a8273dbd145bc016f/common.gradle'
+apply from: 'https://raw.githubusercontent.com/nebula-plugins/nebula-core/d2c65b66452da8768aeee1beaf96a42057a9208d/common.gradle'
 
 description 'Plugins to add provided and optional configurations'
 

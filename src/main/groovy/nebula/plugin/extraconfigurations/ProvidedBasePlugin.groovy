@@ -28,9 +28,11 @@ import org.gradle.api.plugins.MavenPlugin
 import org.gradle.api.plugins.WarPlugin
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.War
 import org.gradle.plugins.ide.eclipse.EclipsePlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
+import org.gradle.util.GUtil
 
 class ProvidedBasePlugin implements Plugin<Project> {
     static final String PROVIDED_CONFIGURATION_NAME = 'provided'
@@ -45,6 +47,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
             configureIvyPublishPlugin(project, providedConfiguration)
             configureWarPlugin(project, providedConfiguration)
             configureMavenPlugin(project, providedConfiguration)
+            createSourceSetProvidedConfigurations(project)
         }
     }
 
@@ -65,6 +68,35 @@ class ProvidedBasePlugin implements Plugin<Project> {
         }
 
         providedConf
+    }
+
+    private createSourceSetProvidedConfigurations(Project project) {
+        project.sourceSets.all { sourceSet ->
+            if (sourceSet.name == SourceSet.MAIN_SOURCE_SET_NAME) {
+                return
+            }
+
+            String compileConfigurationName = sourceSet.compileConfigurationName
+            String providedConfigurationName = compileConfigurationName.replace(GUtil.toCamelCase(JavaPlugin.COMPILE_CONFIGURATION_NAME), GUtil.toCamelCase(ProvidedBasePlugin.PROVIDED_CONFIGURATION_NAME))
+
+            Configuration compileConfiguration = project.configurations.getByName(compileConfigurationName)
+
+            // Our legacy provided scope, uber conf of provided and compile. This ensures what we're at least resolving with compile dependencies.
+            def providedConfiguration = project.configurations.create(providedConfigurationName)
+                    .setVisible(true)
+                    .setTransitive(true)
+                    .setDescription('much like compile, but indicates that you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive.')
+
+            compileConfiguration.extendsFrom(providedConfiguration)
+
+            // exclude provided dependencies when resolving dependencies between projects
+            providedConfiguration.allDependencies.all { Dependency dep ->
+                project.configurations.getByName(sourceSet.runtimeConfigurationName).exclude(group: dep.group, module: dep.name)
+            }
+
+            configureIdeaPlugin(project, providedConfiguration)
+            configureEclipsePlugin(project, providedConfiguration)
+        }
     }
 
     /**

@@ -48,7 +48,15 @@ dependencies {
 
         then:
         result.standardOutput.contains("""
-compile - Compile classpath for source set 'main'.
+compile - Dependencies for source set 'main'.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+
+compileClasspath - Compile classpath for source set 'main'.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+
+compileOnly - Compile dependencies for source set 'main'.
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 
@@ -56,15 +64,23 @@ default - Configuration for default artifacts.
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 
-runtime - Runtime classpath for source set 'main'.
+runtime - Runtime dependencies for source set 'main'.
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 
-testCompile - Compile classpath for source set 'test'.
+testCompile - Dependencies for source set 'test'.
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 
-testRuntime - Runtime classpath for source set 'test'.
+testCompileClasspath - Compile classpath for source set 'test'.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+
+testCompileOnly - Compile dependencies for source set 'test'.
+\\--- foo:bar:2.4
+     \\--- custom:baz:5.1.27
+
+testRuntime - Runtime dependencies for source set 'test'.
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 """)
@@ -96,19 +112,31 @@ dependencies {
 
         then:
         result.standardOutput.contains("""
-compile - Compile classpath for source set 'main'.
+compile - Dependencies for source set 'main'.
+\\--- foo:bar:2.4
+
+compileClasspath - Compile classpath for source set 'main'.
+\\--- foo:bar:2.4
+
+compileOnly - Compile dependencies for source set 'main'.
 \\--- foo:bar:2.4
 
 default - Configuration for default artifacts.
 \\--- foo:bar:2.4
 
-runtime - Runtime classpath for source set 'main'.
+runtime - Runtime dependencies for source set 'main'.
 \\--- foo:bar:2.4
 
-testCompile - Compile classpath for source set 'test'.
+testCompile - Dependencies for source set 'test'.
 \\--- foo:bar:2.4
 
-testRuntime - Runtime classpath for source set 'test'.
+testCompileClasspath - Compile classpath for source set 'test'.
+\\--- foo:bar:2.4
+
+testCompileOnly - Compile dependencies for source set 'test'.
+\\--- foo:bar:2.4
+
+testRuntime - Runtime dependencies for source set 'test'.
 \\--- foo:bar:2.4
 """)
         !result.standardOutput.contains('custom:baz:5.1.27')

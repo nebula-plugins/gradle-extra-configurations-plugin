@@ -22,6 +22,7 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.War
+import org.gradle.util.GUtil
 import spock.lang.Unroll
 
 class ProvidedBasePluginSpec extends PluginProjectSpec {
@@ -54,6 +55,34 @@ class ProvidedBasePluginSpec extends PluginProjectSpec {
         providedConfiguration.extendsFrom == Collections.emptySet()
         providedConfiguration.visible
         providedConfiguration.transitive
+    }
+
+    @Unroll
+    def 'Creates provided configuration for sourceSet "#sourceSetName"'() {
+        when:
+        project.apply plugin: 'java'
+        project.apply plugin: pluginName
+        project.sourceSets {
+            foo
+            bar
+        }
+
+        then: 'Compile configuration extends from provided configuration'
+        String compileConfigurationName = project.sourceSets."$sourceSetName".compileConfigurationName
+        String providedConfigurationName = compileConfigurationName.replace(GUtil.toCamelCase(JavaPlugin.COMPILE_CONFIGURATION_NAME), GUtil.toCamelCase(ProvidedBasePlugin.PROVIDED_CONFIGURATION_NAME))
+        Configuration compileConfiguration = project.configurations.getByName(compileConfigurationName)
+        compileConfiguration.extendsFrom.collect { it.name } as Set<String> == [providedConfigurationName] as Set<String>
+        !compileConfiguration.visible
+        compileConfiguration.transitive
+
+        and: 'Provided configuration exists and does not extend other configurations'
+        Configuration providedConfiguration = project.configurations.getByName(providedConfigurationName)
+        providedConfiguration.extendsFrom == Collections.emptySet()
+        providedConfiguration.visible
+        providedConfiguration.transitive
+
+        where:
+        sourceSetName << ['foo', 'bar']
     }
 
     def 'order independent does provided conf exist'() {

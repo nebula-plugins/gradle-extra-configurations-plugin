@@ -1,3 +1,8 @@
+3.1.0 / 2016-04-12
+==================
+
+* Simplify code to just use the maven-publish ivy-publish conventions to add the configurations
+
 3.0.3 / 2015-10-08
 ==================
 

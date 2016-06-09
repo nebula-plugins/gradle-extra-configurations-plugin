@@ -1,0 +1,60 @@
+{
+    "integTestCompile": {
+        "com.netflix.nebula:nebula-test": {
+            "locked": "4.2.2",
+            "requested": "latest.release"
+        }
+    },
+    "integTestCompileClasspath": {
+        "com.netflix.nebula:nebula-test": {
+            "locked": "4.2.2",
+            "requested": "latest.release"
+        }
+    },
+    "integTestCompileOnly": {
+        "com.netflix.nebula:nebula-test": {
+            "locked": "4.2.2",
+            "requested": "latest.release"
+        }
+    },
+    "integTestRuntime": {
+        "com.netflix.nebula:nebula-test": {
+            "locked": "4.2.2",
+            "requested": "latest.release"
+        }
+    },
+    "jacocoAgent": {
+        "org.jacoco:org.jacoco.agent": {
+            "locked": "0.7.7.201606060606"
+        }
+    },
+    "jacocoAnt": {
+        "org.jacoco:org.jacoco.ant": {
+            "locked": "0.7.7.201606060606"
+        }
+    },
+    "testCompile": {
+        "com.netflix.nebula:nebula-test": {
+            "locked": "4.2.2",
+            "requested": "latest.release"
+        }
+    },
+    "testCompileClasspath": {
+        "com.netflix.nebula:nebula-test": {
+            "locked": "4.2.2",
+            "requested": "latest.release"
+        }
+    },
+    "testCompileOnly": {
+        "com.netflix.nebula:nebula-test": {
+            "locked": "4.2.2",
+            "requested": "latest.release"
+        }
+    },
+    "testRuntime": {
+        "com.netflix.nebula:nebula-test": {
+            "locked": "4.2.2",
+            "requested": "latest.release"
+        }
+    }
+}

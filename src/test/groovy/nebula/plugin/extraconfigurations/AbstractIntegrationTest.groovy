@@ -2,7 +2,7 @@ package nebula.plugin.extraconfigurations
 
 import nebula.test.IntegrationSpec
 
-class AbstractIntegrationTest extends IntegrationSpec {
+abstract class AbstractIntegrationTest extends IntegrationSpec {
     public static final String GROUP_ID = 'nebula.extraconf'
     public static final String VERSION = '1.0'
     public static final File MAVEN_LOCAL_DIR = new File("${System.properties['user.home']}/.m2/repository")

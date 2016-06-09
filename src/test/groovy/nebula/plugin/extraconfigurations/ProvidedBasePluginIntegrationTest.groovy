@@ -63,7 +63,7 @@ dependencies {
         then:
         new File(projectDir, 'build/classes/main/nebula/extraconf/HelloWorld.class').exists()
         new File(projectDir, 'build/classes/test/nebula/extraconf/HelloWorldTest.class').exists()
-        new File(projectDir, 'build/test-results/TEST-nebula.extraconf.HelloWorldTest.xml').exists()
+        new File(projectDir, 'build/test-results/test/TEST-nebula.extraconf.HelloWorldTest.xml').exists()
     }
 
     private void createProductionJavaSourceFile() {

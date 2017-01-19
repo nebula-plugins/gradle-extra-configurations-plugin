@@ -170,7 +170,7 @@ publishing {
 
     repositories {
         maven {
-            url '$repoUrl.canonicalPath'
+            url '${repoUrl.toURI().toURL()}'
         }
     }
 }
@@ -202,7 +202,7 @@ dependencies {
 
 uploadArchives {
     repositories.mavenDeployer {
-        repository(url: "file://$repoUrl.absolutePath")
+        repository(url: "${repoUrl.toURI().toURL()}")
     }
 }
 """
@@ -242,7 +242,7 @@ publishing {
 
     repositories {
         ivy {
-            url '$repoUrl.canonicalPath'
+            url '${repoUrl.toURI().toURL()}'
         }
     }
 }
@@ -359,7 +359,7 @@ task explodedWar(type: Copy) {
             group = '$GROUP_ID'
             version = '$VERSION'
 
-            repositories { maven { url '${mavenRepo.absolutePath}' } }
+            repositories { maven { url '${mavenRepo.toURI().toURL()}' } }
 
             dependencies {
                 provided 'test.nebula:foo:1.0.0'
@@ -370,7 +370,7 @@ task explodedWar(type: Copy) {
                     repositories {
                         maven {
                             name 'testRepo'
-                            url '${repoUrl.canonicalPath}'
+                            url '${repoUrl.toURI().toURL()}'
                         }
                     }
                     publications {

@@ -37,7 +37,7 @@ apply plugin: 'nebula.optional-base'
         when:
         buildFile << """
 repositories {
-    maven { url '$mavenRepoDir.canonicalPath' }
+    maven { url '${mavenRepoDir.toURI().toURL()}' }
 }
 
 dependencies {
@@ -47,7 +47,7 @@ dependencies {
         ExecutionResult result = runTasksSuccessfully('dependencies')
 
         then:
-        result.standardOutput.contains("""
+        result.standardOutput.readLines().join('\n').contains("""
 compile - Dependencies for source set 'main'.
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
@@ -101,7 +101,7 @@ ext.excludeOptional = { dep ->
 }
 
 repositories {
-    maven { url '$mavenRepoDir.canonicalPath' }
+    maven { url '${mavenRepoDir.toURI().toURL()}' }
 }
 
 dependencies {
@@ -111,7 +111,7 @@ dependencies {
         ExecutionResult result = runTasksSuccessfully('dependencies')
 
         then:
-        result.standardOutput.contains("""
+        result.standardOutput.readLines().join('\n').contains("""
 compile - Dependencies for source set 'main'.
 \\--- foo:bar:2.4
 
@@ -170,7 +170,7 @@ publishing {
 
     repositories {
         maven {
-            url '$repoUrl.canonicalPath'
+            url '${repoUrl.toURI().toURL()}'
         }
     }
 }
@@ -203,7 +203,7 @@ dependencies {
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: 'file://$repoUrl.canonicalPath')
+            repository(url: '${repoUrl.toURI().toURL()}')
         }
     }
 }
@@ -243,7 +243,7 @@ publishing {
 
     repositories {
         ivy {
-            url '$repoUrl.canonicalPath'
+            url '${repoUrl.toURI().toURL()}'
         }
     }
 }
@@ -266,7 +266,7 @@ publishing {
             group = '$GROUP_ID'
             version = '$VERSION'
 
-            repositories { maven { url '${mavenRepo.absolutePath}' } }
+            repositories { maven { url '${mavenRepo.toURI().toURL()}' } }
 
             dependencies {
                 compile 'test.nebula:foo:1.0.0', optional
@@ -277,7 +277,7 @@ publishing {
                     repositories {
                         maven {
                             name 'testRepo'
-                            url '${repoUrl.canonicalPath}'
+                            url '${repoUrl.toURI().toURL()}'
                         }
                     }
                     publications {

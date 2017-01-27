@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package nebula.plugin.extraconfigurations
+
 import nebula.test.dependencies.DependencyGraph
 import nebula.test.dependencies.DependencyGraphBuilder
 import nebula.test.dependencies.GradleDependencyGenerator
@@ -47,42 +48,10 @@ dependencies {
         ExecutionResult result = runTasksSuccessfully('dependencies')
 
         then:
-        result.standardOutput.contains("""
-compile - Dependencies for source set 'main'.
+        result.standardOutput.contains("""compile - Dependencies for source set 'main' (deprecated, use 'implementation ' instead).
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 
-compileClasspath - Compile classpath for source set 'main'.
-\\--- foo:bar:2.4
-     \\--- custom:baz:5.1.27
-
-compileOnly - Compile dependencies for source set 'main'.
-\\--- foo:bar:2.4
-     \\--- custom:baz:5.1.27
-
-default - Configuration for default artifacts.
-\\--- foo:bar:2.4
-     \\--- custom:baz:5.1.27
-
-runtime - Runtime dependencies for source set 'main'.
-\\--- foo:bar:2.4
-     \\--- custom:baz:5.1.27
-
-testCompile - Dependencies for source set 'test'.
-\\--- foo:bar:2.4
-     \\--- custom:baz:5.1.27
-
-testCompileClasspath - Compile classpath for source set 'test'.
-\\--- foo:bar:2.4
-     \\--- custom:baz:5.1.27
-
-testCompileOnly - Compile dependencies for source set 'test'.
-\\--- foo:bar:2.4
-     \\--- custom:baz:5.1.27
-
-testRuntime - Runtime dependencies for source set 'test'.
-\\--- foo:bar:2.4
-     \\--- custom:baz:5.1.27
 """)
     }
 
@@ -111,33 +80,9 @@ dependencies {
         ExecutionResult result = runTasksSuccessfully('dependencies')
 
         then:
-        result.standardOutput.contains("""
-compile - Dependencies for source set 'main'.
+        result.standardOutput.contains("""compile - Dependencies for source set 'main' (deprecated, use 'implementation ' instead).
 \\--- foo:bar:2.4
 
-compileClasspath - Compile classpath for source set 'main'.
-\\--- foo:bar:2.4
-
-compileOnly - Compile dependencies for source set 'main'.
-\\--- foo:bar:2.4
-
-default - Configuration for default artifacts.
-\\--- foo:bar:2.4
-
-runtime - Runtime dependencies for source set 'main'.
-\\--- foo:bar:2.4
-
-testCompile - Dependencies for source set 'test'.
-\\--- foo:bar:2.4
-
-testCompileClasspath - Compile classpath for source set 'test'.
-\\--- foo:bar:2.4
-
-testCompileOnly - Compile dependencies for source set 'test'.
-\\--- foo:bar:2.4
-
-testRuntime - Runtime dependencies for source set 'test'.
-\\--- foo:bar:2.4
 """)
         !result.standardOutput.contains('custom:baz:5.1.27')
     }

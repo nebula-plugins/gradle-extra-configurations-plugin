@@ -328,7 +328,7 @@ apply plugin: 'nebula.provided-base'
 
 repositories {
     mavenCentral()
-}cg
+}
 
 dependencies {
     compile project(":shared-component")

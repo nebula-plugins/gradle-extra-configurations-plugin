@@ -63,7 +63,7 @@ class OptionalBasePlugin implements Plugin<Project> {
                         pub.pom.withXml {
                             project.ext.optionalDeps.each { dep ->
                                 def foundDep = asNode().dependencies.dependency.find {
-                                    it.artifactId.text() == dep.name
+                                    it.groupId.text() == dep.group && it.artifactId.text() == dep.name
                                 }
 
                                 if (foundDep) {

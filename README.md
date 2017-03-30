@@ -9,7 +9,7 @@ Nebula Extra Configurations
 
 This plugin allows dependencies to be declared with a configuration or attribute not available in Gradle core.
 
-* `provided` - for Gradle versions prior to 3.4. Use `compileOnly` for later versions
+* `provided` - We recommend the built in `compileOnly` configuration for Gradle releases that support it. Incompatible with Gradle versions 3.4 and later and will fail to apply
 * `optional`
 
 The following publishing plugins support the correct handling when generating the relevant metadata:

@@ -22,8 +22,10 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.War
+import spock.lang.Ignore
 import spock.lang.Unroll
 
+@Ignore
 class ProvidedBasePluginSpec extends PluginProjectSpec {
     @Override
     String getPluginName() {

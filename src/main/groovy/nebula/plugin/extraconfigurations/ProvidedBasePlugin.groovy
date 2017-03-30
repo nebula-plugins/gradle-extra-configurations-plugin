@@ -15,6 +15,7 @@
  */
 package nebula.plugin.extraconfigurations
 
+import com.netflix.nebula.interop.GradleKt
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -36,6 +37,9 @@ class ProvidedBasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        if (!GradleKt.versionLessThan(project.gradle, "3.4")) {
+            throw new IllegalStateException("This plugin is not compatible with Gradle 3.4 and later. Use the 'compileOnly' configuration")
+        }
         project.plugins.withType(JavaPlugin) {
             Configuration providedConfiguration = createProvidedConfiguration(project)
             configureIdeaPlugin(project, providedConfiguration)
@@ -88,7 +92,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
      */
     private void configureEclipsePlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(EclipsePlugin) {
-            project.eclipse.classpath.plusConfigurations += [ providedConfiguration ]
+            project.eclipse.classpath.plusConfigurations += [providedConfiguration]
         }
     }
 
@@ -176,7 +180,7 @@ class ProvidedBasePlugin implements Plugin<Project> {
     private void configureMavenPlugin(Project project, Configuration providedConfiguration) {
         project.plugins.withType(MavenPlugin) {
             project.conf2ScopeMappings.addMapping(MavenPlugin.COMPILE_PRIORITY + 1, providedConfiguration,
-                                                  Conf2ScopeMappingContainer.PROVIDED)
+                    Conf2ScopeMappingContainer.PROVIDED)
         }
     }
 }

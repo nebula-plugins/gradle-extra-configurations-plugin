@@ -125,6 +125,54 @@ publishing {
         then:
         assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'runtime')
     }
+    def "Deploying to a Maven repository with multiple poms operates on both"() {
+        given:
+        File repoUrl = new File(projectDir, 'build/repo')
+
+        when:
+        buildFile << """
+apply plugin: 'maven'
+
+group = '$GROUP_ID'
+version '$VERSION'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.commons:commons-lang3:3.3.2', optional
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourceJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: 'file://$repoUrl.canonicalPath')
+            addFilter('sources') { artifact, file ->
+                file.name.endsWith('sources.jar')
+            }
+            addFilter('default') { artifact, file ->
+                !file.name.endsWith('sources.jar')
+            }
+        }
+    }
+}
+"""
+        runTasksSuccessfully('install', 'uploadArchives')
+
+        then:
+        assertOptionalDependencyInGeneratedPom(MAVEN_LOCAL_DIR, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
+        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
+    }
 
     def "Publishing provided dependencies to a Maven repository preserves the scope when using Maven plugin"() {
         given:

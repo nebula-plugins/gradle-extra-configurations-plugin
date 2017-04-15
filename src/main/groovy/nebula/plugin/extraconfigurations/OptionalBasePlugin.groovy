@@ -123,7 +123,7 @@ class OptionalBasePlugin implements Plugin<Project> {
                 def installers = project.tasks.install.repositories
                 def deployers = project.tasks.uploadArchives.repositories
 
-                installers.plus(deployers)*.pom*.whenConfigured { pom ->
+                (installers + deployers)*.activePomFilters*.pomTemplate*.whenConfigured { pom ->
                     project.ext.optionalDeps.each { optionalDep ->
                         pom.dependencies.find {
                             dep -> dep.groupId == optionalDep.group && dep.artifactId == optionalDep.name

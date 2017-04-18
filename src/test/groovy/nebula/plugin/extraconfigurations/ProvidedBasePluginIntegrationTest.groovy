@@ -176,7 +176,7 @@ publishing {
 
     repositories {
         maven {
-            url '$repoUrl.canonicalPath'
+            url '${repoUrl.toURI().toURL()}'
         }
     }
 }
@@ -208,7 +208,7 @@ dependencies {
 
 uploadArchives {
     repositories.mavenDeployer {
-        repository(url: "file://$repoUrl.absolutePath")
+        repository(url: "${repoUrl.toURI().toURL()}")
     }
 }
 """
@@ -376,7 +376,7 @@ task explodedWar(type: Copy) {
                     repositories {
                         maven {
                             name 'testRepo'
-                            url '${repoUrl.canonicalPath}'
+                            url '${repoUrl.toURI().toURL()}'
                         }
                     }
                     publications {

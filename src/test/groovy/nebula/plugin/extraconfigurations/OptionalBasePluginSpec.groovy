@@ -35,7 +35,6 @@ class OptionalBasePluginSpec extends PluginProjectSpec {
         optionalDependency.group == 'commons-io'
         optionalDependency.name == 'commons-io'
         optionalDependency.version == '2.4'
-        optionalDependency.configuration == 'default'
     }
 
     def "Can add optional external dependency with String notation"() {
@@ -54,7 +53,6 @@ class OptionalBasePluginSpec extends PluginProjectSpec {
         optionalDependency.group == 'commons-io'
         optionalDependency.name == 'commons-io'
         optionalDependency.version == '2.4'
-        optionalDependency.configuration == 'default'
     }
 
     def "Can add mandatory and optional external dependencies"() {
@@ -75,7 +73,6 @@ class OptionalBasePluginSpec extends PluginProjectSpec {
         optionalDependency.group == 'commons-io'
         optionalDependency.name == 'commons-io'
         optionalDependency.version == '2.4'
-        optionalDependency.configuration == 'default'
     }
 
     def "Can combine optional with other operators"() {
@@ -99,6 +96,5 @@ class OptionalBasePluginSpec extends PluginProjectSpec {
         optionalDependency.group == 'commons-io'
         optionalDependency.name == 'commons-io'
         optionalDependency.version == '2.4'
-        optionalDependency.configuration == 'default'
     }
 }

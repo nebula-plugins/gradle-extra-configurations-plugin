@@ -123,7 +123,7 @@ publishing {
         runTasksSuccessfully('publish')
 
         then:
-        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'runtime')
+        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
     }
     def "Deploying to a Maven repository with multiple poms operates on both"() {
         given:
@@ -286,6 +286,6 @@ publishing {
         runTasksSuccessfully('publish')
 
         then:
-        assertOptionalDependencyInGeneratedPom(repoUrl, 'test.nebula', 'foo', '1.0.0', 'runtime')
+        assertOptionalDependencyInGeneratedPom(repoUrl, 'test.nebula', 'foo', '1.0.0', 'compile')
     }
 }

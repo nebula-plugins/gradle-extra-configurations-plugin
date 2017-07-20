@@ -1,60 +1,60 @@
 {
     "compile": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         }
     },
     "compileClasspath": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         }
     },
     "default": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         }
     },
     "integTestCompile": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         }
     },
     "integTestCompileClasspath": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         }
     },
     "integTestRuntime": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         }
     },
     "integTestRuntimeClasspath": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         }
     },
     "jacocoAgent": {
@@ -69,54 +69,54 @@
     },
     "runtime": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         }
     },
     "runtimeClasspath": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         }
     },
     "testCompile": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         }
     },
     "testCompileClasspath": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         }
     },
     "testRuntime": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         }
     },
     "testRuntimeClasspath": {
         "com.netflix.nebula:nebula-gradle-interop": {
-            "locked": "0.4.0",
+            "locked": "0.5.0",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         }
     }
 }

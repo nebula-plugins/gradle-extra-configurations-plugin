@@ -31,14 +31,18 @@ import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.api.tasks.bundling.War
 import org.gradle.plugins.ide.eclipse.EclipsePlugin
 import org.gradle.plugins.ide.idea.IdeaPlugin
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class ProvidedBasePlugin implements Plugin<Project> {
+    static final Logger LOGGER = LoggerFactory.getLogger(ProvidedBasePlugin)
     static final String PROVIDED_CONFIGURATION_NAME = 'provided'
 
     @Override
     void apply(Project project) {
         if (!GradleKt.versionLessThan(project.gradle, "3.4")) {
-            throw new IllegalStateException("This plugin is not compatible with Gradle 3.4 and later. Use the 'compileOnly' configuration")
+            LOGGER.warn("nebula.provided-base plugin does nothing on Gradle 3.4 and later. Use the 'compileOnly' configuration")
+            return
         }
         project.plugins.withType(JavaPlugin) {
             Configuration providedConfiguration = createProvidedConfiguration(project)

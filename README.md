@@ -25,8 +25,8 @@ The following publishing plugins support the correct handling when generating th
 To include, add the following to your build.gradle
 
     plugins {
-      id 'nebula.optional-base' version '3.0.3' // if you want optional-base
-      id 'nebula.provided-base' version '3.0.3' // if you want provided-base
+      id 'nebula.optional-base' version '3.3.0' // if you want optional-base
+      id 'nebula.provided-base' version '3.3.0' // if you want provided-base
     }
 
 or
@@ -35,7 +35,7 @@ or
         repositories { jcenter() }
 
         dependencies {
-            classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
+            classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.3.0'
         }
     }
 

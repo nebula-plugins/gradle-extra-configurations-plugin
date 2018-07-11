@@ -46,9 +46,10 @@ dependencies {
 }
 """
         ExecutionResult result = runTasksSuccessfully('dependencies')
+        def output = result.standardOutput.readLines().join('\n').replaceAll("'implementation '", "'implementation'")
 
         then:
-        result.standardOutput.readLines().join('\n').contains("""compile - Dependencies for source set 'main' (deprecated, use 'implementation ' instead).
+        output.contains("""compile - Dependencies for source set 'main' (deprecated, use 'implementation' instead).
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 
@@ -78,9 +79,10 @@ dependencies {
 }
 """
         ExecutionResult result = runTasksSuccessfully('dependencies')
+        def output = result.standardOutput.readLines().join('\n').replaceAll("'implementation '", "'implementation'")
 
         then:
-        result.standardOutput.readLines().join('\n').contains("""compile - Dependencies for source set 'main' (deprecated, use 'implementation ' instead).
+        output.contains("""compile - Dependencies for source set 'main' (deprecated, use 'implementation' instead).
 \\--- foo:bar:2.4
 
 """)

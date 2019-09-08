@@ -42,14 +42,14 @@ repositories {
 }
 
 dependencies {
-    compile 'foo:bar:2.4', optional
+    implementation 'foo:bar:2.4', optional
 }
 """
         ExecutionResult result = runTasksSuccessfully('dependencies')
         def output = result.standardOutput.readLines().join('\n').replaceAll("'implementation '", "'implementation'")
 
         then:
-        output.contains("""compile - Dependencies for source set 'main' (deprecated, use 'implementation' instead).
+        output.contains("""compileClasspath - Compile classpath for source set 'main'.
 \\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 
@@ -75,14 +75,14 @@ repositories {
 }
 
 dependencies {
-    compile 'foo:bar:2.4', excludeOptional
+    implementation 'foo:bar:2.4', excludeOptional
 }
 """
         ExecutionResult result = runTasksSuccessfully('dependencies')
         def output = result.standardOutput.readLines().join('\n').replaceAll("'implementation '", "'implementation'")
 
         then:
-        output.contains("""compile - Dependencies for source set 'main' (deprecated, use 'implementation' instead).
+        output.contains("""compileClasspath - Compile classpath for source set 'main'.
 \\--- foo:bar:2.4
 
 """)
@@ -105,7 +105,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.3.2', optional
+    implementation 'org.apache.commons:commons-lang3:3.3.2', optional
 }
 
 publishing {
@@ -125,89 +125,7 @@ publishing {
         runTasksSuccessfully('publish')
 
         then:
-        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
-    }
-    def "Deploying to a Maven repository with multiple poms operates on both"() {
-        given:
-        File repoUrl = new File(projectDir, 'build/repo')
-
-        when:
-        buildFile << """
-apply plugin: 'maven'
-
-group = '$GROUP_ID'
-version '$VERSION'
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile 'org.apache.commons:commons-lang3:3.3.2', optional
-}
-
-task sourceJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives sourceJar
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: 'file://$repoUrl.canonicalPath')
-            addFilter('sources') { artifact, file ->
-                file.name.endsWith('sources.jar')
-            }
-            addFilter('default') { artifact, file ->
-                !file.name.endsWith('sources.jar')
-            }
-        }
-    }
-}
-"""
-        runTasksSuccessfully('install', 'uploadArchives')
-
-        then:
-        assertOptionalDependencyInGeneratedPom(MAVEN_LOCAL_DIR, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
-        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
-    }
-
-    def "Publishing provided dependencies to a Maven repository preserves the scope when using Maven plugin"() {
-        given:
-        File repoUrl = new File(projectDir, 'build/repo')
-
-        when:
-        buildFile << """
-apply plugin: 'maven'
-
-group = '$GROUP_ID'
-version '$VERSION'
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile 'org.apache.commons:commons-lang3:3.3.2', optional
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: 'file://$repoUrl.canonicalPath')
-        }
-    }
-}
-"""
-        runTasksSuccessfully('install', 'uploadArchives')
-
-        then:
-        assertOptionalDependencyInGeneratedPom(MAVEN_LOCAL_DIR, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
-        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'compile')
+        assertOptionalDependencyInGeneratedPom(repoUrl, 'org.apache.commons', 'commons-lang3', '3.3.2', 'runtime')
     }
 
     def "Publishing optional dependencies to an Ivy repository preserves the scope"() {
@@ -226,7 +144,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.3.2', optional
+    implementation 'org.apache.commons:commons-lang3:3.3.2', optional
 }
 
 publishing {

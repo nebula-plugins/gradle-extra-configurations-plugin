@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '12.3.1'
+    id 'nebula.plugin-plugin' version '12.3.5'
 }
 
 description 'Plugins to add provided and optional configurations'

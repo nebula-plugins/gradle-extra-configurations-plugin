@@ -22,7 +22,7 @@ plugins {
 description 'Plugins to add provided and optional configurations'
 
 dependencies {
-    compile 'com.netflix.nebula:nebula-gradle-interop:latest.release'
+    implementation 'com.netflix.nebula:nebula-gradle-interop:latest.release'
 }
 
 contacts {

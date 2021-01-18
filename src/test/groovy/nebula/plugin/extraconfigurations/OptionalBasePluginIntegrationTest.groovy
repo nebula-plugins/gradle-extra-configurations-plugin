@@ -23,7 +23,7 @@ import nebula.test.functional.ExecutionResult
 class OptionalBasePluginIntegrationTest extends AbstractIntegrationTest {
     def setup() {
         buildFile << """
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'nebula.optional-base'
 """
     }
@@ -182,7 +182,7 @@ publishing {
             repositories { maven { url '${mavenRepo.toURI().toURL()}' } }
 
             dependencies {
-                compile 'test.nebula:foo:1.0.0', optional
+                api 'test.nebula:foo:1.0.0', optional
             }
 
             afterEvaluate {

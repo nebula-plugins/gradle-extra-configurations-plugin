@@ -30,7 +30,7 @@ To include, add the following to your build.gradle
 or
 
     buildscript {
-        repositories { jcenter() }
+        repositories { mavenCentral() }
 
         dependencies {
             classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'

@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '16.3.0'
+    id 'nebula.plugin-plugin' version '17.0.0'
 }
 
 description 'Plugins to add provided and optional configurations'
@@ -32,19 +32,27 @@ contacts {
     }
 }
 
+
 pluginBundle {
+    pluginTags = [
+            optionalPlugin: ['nebula', 'configuration', 'configurations', 'optional'],
+            providedPlugin: ['nebula', 'configuration', 'configurations', 'provided']
+    ]
+}
+
+gradlePlugin {
     plugins {
         optionalPlugin {
             id = 'nebula.optional-base'
             displayName = 'Optional Configurations plugin'
             description = project.description
-            tags = ['nebula', 'configuration', 'configurations', 'optional']
+            implementationClass = 'nebula.plugin.extraconfigurations.OptionalBasePlugin'
         }
         providedPlugin {
             id = 'nebula.provided-base'
             displayName = 'Provided Configurations plugin'
             description = project.description
-            tags = ['nebula', 'configuration', 'configurations', 'provided']
+            implementationClass = 'nebula.plugin.extraconfigurations.ProvidedBasePlugin'
         }
     }
 }

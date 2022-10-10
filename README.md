@@ -2,7 +2,7 @@ Nebula Extra Configurations
 ===========================
 
 ![Support Status](https://img.shields.io/badge/nebula-active-green.svg)
-[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/com.netflix.nebula/gradle-extra-configurations-plugin/maven-metadata.xml.svg?label=gradlePluginPortal)](https://plugins.gradle.org/plugin/nebula.extra-configurations)
+[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/com.netflix.nebula/gradle-extra-configurations-plugin/maven-metadata.xml.svg?label=gradlePluginPortal)](https://plugins.gradle.org/plugin/com.netflix.nebula.extra-configurations)
 [![Maven Central](https://img.shields.io/maven-central/v/com.netflix.nebula/gradle-extra-configurations-plugin)](https://maven-badges.herokuapp.com/maven-central/com.netflix.nebula/gradle-extra-configurations-plugin)
 ![Build](https://github.com/nebula-plugins/gradle-extra-configurations-plugin/actions/workflows/nebula.yml/badge.svg)
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
@@ -24,8 +24,8 @@ The following publishing plugins support the correct handling when generating th
 To include, add the following to your build.gradle
 
     plugins {
-      id 'nebula.optional-base' version '3.0.3' // if you want optional-base
-      id 'nebula.provided-base' version '3.0.3' // if you want provided-base
+      id 'com.netflix.nebula.optional-base' version '3.0.3' // if you want optional-base
+      id 'com.netflix.nebula.provided-base' version '3.0.3' // if you want provided-base
     }
 
 or
@@ -64,11 +64,11 @@ The JAR file comes with two plugins:
 
 To use the Provided plugin, include the following code snippet in your build script:
 
-    apply plugin: 'nebula.provided-base'
+    apply plugin: 'com.netflix.nebula.provided-base'
 
 To use the Optional plugin, include the following code snippet in your build script:
 
-    apply plugin: 'nebula.optional-base'
+    apply plugin: 'com.netflix.nebula.optional-base'
 
 ### Using the provided plugin
 
@@ -114,7 +114,7 @@ When publishing a provided dependency to an Ivy repository the declaration in th
 #### Usage example
 
     apply plugin: 'java'
-    apply plugin: 'nebula.provided-base'
+    apply plugin: 'com.netflix.nebula.provided-base'
 
     repositories {
         mavenCentral()
@@ -165,7 +165,7 @@ When publishing a optional dependency to an Ivy repository the declaration in th
 #### Usage example
 
     apply plugin: 'java'
-    apply plugin: 'nebula.optional-base'
+    apply plugin: 'com.netflix.nebula.optional-base'
 
     repositories {
         mavenCentral()

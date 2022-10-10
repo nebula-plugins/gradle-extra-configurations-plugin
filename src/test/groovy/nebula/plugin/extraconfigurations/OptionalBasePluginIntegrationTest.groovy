@@ -24,7 +24,7 @@ class OptionalBasePluginIntegrationTest extends AbstractIntegrationTest {
     def setup() {
         buildFile << """
 apply plugin: 'java-library'
-apply plugin: 'nebula.optional-base'
+apply plugin: 'com.netflix.nebula.optional-base'
 """
     }
 

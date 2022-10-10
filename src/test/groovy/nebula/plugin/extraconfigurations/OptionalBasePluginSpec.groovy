@@ -6,7 +6,7 @@ class OptionalBasePluginSpec extends PluginProjectSpec {
 
     @Override
     String getPluginName() {
-        'nebula.optional-base'
+        'com.netflix.nebula.optional-base'
     }
 
     def setup() {

@@ -21,7 +21,7 @@ class ProvidedBasePluginIntegrationTest extends AbstractIntegrationTest {
         when:
         buildFile << """
 apply plugin: 'java'
-apply plugin: 'nebula.provided-base'
+apply plugin: 'com.netflix.nebula.provided-base'
 """
         def result = runTasksSuccessfully('help')
 

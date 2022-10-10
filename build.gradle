@@ -43,13 +43,13 @@ pluginBundle {
 gradlePlugin {
     plugins {
         optionalPlugin {
-            id = 'nebula.optional-base'
+            id = 'com.netflix.nebula.optional-base'
             displayName = 'Optional Configurations plugin'
             description = project.description
             implementationClass = 'nebula.plugin.extraconfigurations.OptionalBasePlugin'
         }
         providedPlugin {
-            id = 'nebula.provided-base'
+            id = 'com.netflix.nebula.provided-base'
             displayName = 'Provided Configurations plugin'
             description = project.description
             implementationClass = 'nebula.plugin.extraconfigurations.ProvidedBasePlugin'

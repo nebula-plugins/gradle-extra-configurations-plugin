@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'com.netflix.nebula.plugin-plugin' version '19.0.2'
+    id 'com.netflix.nebula.plugin-plugin' version '20.0.0'
 }
 
 description 'Plugins to add provided and optional configurations'
@@ -33,13 +33,6 @@ contacts {
 }
 
 
-pluginBundle {
-    pluginTags = [
-            optionalPlugin: ['nebula', 'configuration', 'configurations', 'optional'],
-            providedPlugin: ['nebula', 'configuration', 'configurations', 'provided']
-    ]
-}
-
 gradlePlugin {
     plugins {
         optionalPlugin {
@@ -47,12 +40,14 @@ gradlePlugin {
             displayName = 'Optional Configurations plugin'
             description = project.description
             implementationClass = 'nebula.plugin.extraconfigurations.OptionalBasePlugin'
+            tags.set(['nebula', 'configuration', 'configurations', 'optional'])
         }
         providedPlugin {
             id = 'com.netflix.nebula.provided-base'
             displayName = 'Provided Configurations plugin'
             description = project.description
             implementationClass = 'nebula.plugin.extraconfigurations.ProvidedBasePlugin'
+            tags.set(['nebula', 'configuration', 'configurations', 'provided'])
         }
     }
 }

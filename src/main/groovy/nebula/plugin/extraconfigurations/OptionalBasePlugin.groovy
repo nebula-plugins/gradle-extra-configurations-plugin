@@ -17,7 +17,6 @@ package nebula.plugin.extraconfigurations
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.MavenPlugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.maven.MavenPublication
@@ -31,7 +30,6 @@ class OptionalBasePlugin implements Plugin<Project> {
         enhanceProjectModel(project)
         configureMavenPublishPlugin(project)
         configureIvyPublishPlugin(project)
-        configureMavenPlugin(project)
     }
 
     /**
@@ -105,29 +103,6 @@ class OptionalBasePlugin implements Plugin<Project> {
                                 foundDep?.@conf = OPTIONAL_IDENTIFIER
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Configures Maven plugin to ensure that published dependencies receive the optional element.
-     *
-     * @param project Project
-     */
-    private void configureMavenPlugin(Project project) {
-        project.plugins.withType(MavenPlugin) {
-            // Requires user definition of Maven installer/deployer which could be anywhere in the build script
-            project.afterEvaluate {
-                def installers = project.tasks.install.repositories
-                def deployers = project.tasks.uploadArchives.repositories
-
-                (installers + deployers)*.activePomFilters.flatten()*.pomTemplate*.whenConfigured { pom ->
-                    project.ext.optionalDeps.each { optionalDep ->
-                        pom.dependencies.find {
-                            dep -> dep.groupId == optionalDep.group && dep.artifactId == optionalDep.name
-                        }.optional = true
                     }
                 }
             }

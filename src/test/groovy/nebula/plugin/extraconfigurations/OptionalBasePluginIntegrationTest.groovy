@@ -49,8 +49,8 @@ dependencies {
         def output = result.standardOutput.readLines().join('\n').replaceAll("'implementation '", "'implementation'")
 
         then:
-        output.contains("""compileClasspath - Compile classpath for source set 'main'.
-\\--- foo:bar:2.4
+        output.contains("""compileClasspath - Compile classpath for source set 'main'.""")
+        output.contains("""\\--- foo:bar:2.4
      \\--- custom:baz:5.1.27
 
 """)
@@ -82,8 +82,8 @@ dependencies {
         def output = result.standardOutput.readLines().join('\n').replaceAll("'implementation '", "'implementation'")
 
         then:
-        output.contains("""compileClasspath - Compile classpath for source set 'main'.
-\\--- foo:bar:2.4
+        output.contains("""compileClasspath - Compile classpath for source set 'main'.""")
+        output.contains("""\\--- foo:bar:2.4
 
 """)
         !result.standardOutput.contains('custom:baz:5.1.27')

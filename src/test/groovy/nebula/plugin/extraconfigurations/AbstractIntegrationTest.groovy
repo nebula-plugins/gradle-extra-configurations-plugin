@@ -1,5 +1,6 @@
 package nebula.plugin.extraconfigurations
 
+import groovy.xml.XmlSlurper
 import nebula.test.IntegrationSpec
 
 abstract class AbstractIntegrationTest extends IntegrationSpec {

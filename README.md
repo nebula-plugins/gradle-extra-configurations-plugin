@@ -1,6 +1,9 @@
 Nebula Extra Configurations
 ===========================
 
+# Deprecation Notice
+This repository is **Archived**. The `provided` maven scope is now serviced by Gradle's `compileOnly` dependencies, and the `optional` Maven scope doesn't actually do anything. 
+
 ![Support Status](https://img.shields.io/badge/nebula-active-green.svg)
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/com.netflix.nebula/gradle-extra-configurations-plugin/maven-metadata.xml.svg?label=gradlePluginPortal)](https://plugins.gradle.org/plugin/com.netflix.nebula.extra-configurations)
 [![Maven Central](https://img.shields.io/maven-central/v/com.netflix.nebula/gradle-extra-configurations-plugin)](https://maven-badges.herokuapp.com/maven-central/com.netflix.nebula/gradle-extra-configurations-plugin)
